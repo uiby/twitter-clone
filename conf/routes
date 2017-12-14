@@ -11,5 +11,5 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /list                       controllers.HomeController.list()
 
-GET     /new                        controllers.HomeController.userNew()
-POST    /list                       controllers.HomeController.userAdd()
+GET     /signup                        controllers.HomeController.signup()
+POST    /signup                       controllers.HomeController.userAdd()

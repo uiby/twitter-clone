@@ -5,7 +5,7 @@ create table users (
   user_id                        char(12) not null,
   user_name                      varchar(255) not null,
   email                          varchar(255) not null,
-  password                       varchar(8) not null,
+  password                       varchar(12) not null,
   PRIMARY KEY (user_id)
 );
 

@@ -4,6 +4,16 @@
         <title>Sign up</title>
     </head>
     <body>
+
+        @* Global errors are not tied to any particular userForm field *@
+        @if(userForm.hasGlobalErrors) {
+          @userForm.globalErrors.map { error: FormError =>
+            <div>
+                @error.key: @error.message
+            </div>
+          }
+        }
+
         
         @helper.form(action = routes.HomeController.userAdd()) {
         @helper.CSRF.formField

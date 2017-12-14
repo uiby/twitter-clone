@@ -36,25 +36,35 @@ class HomeController @Inject()(userService: UserService, mcc: MessagesController
 
   //アカウント作成
   val userForm = Form(
-      mapping(
-        "user_id" -> nonEmptyText,
-        "user_name" -> nonEmptyText,
-        "email" -> email,
-        "password" -> nonEmptyText
-      )(
-        (Users.apply)
-      )(
-        (Users.unapply)
-      )
+    mapping(
+      "user_id" -> nonEmptyText(minLength = 3, maxLength = 12),
+      "user_name" -> nonEmptyText(minLength = 3, maxLength = 12),
+      "email" -> email,
+      "password" -> nonEmptyText(minLength = 5, maxLength = 12)
+    )(
+      (Users.apply)
+    )(
+      (Users.unapply)
     )
-  def userNew() = Action {implicit request: MessagesRequest[AnyContent] =>
+  )
+  def signup() = Action {implicit request: MessagesRequest[AnyContent] =>
     Ok(views.html.signup(userForm))
   }
 
   //アカウント追加
   def userAdd() = Action {implicit request: MessagesRequest[AnyContent] =>
-    val user: Users = userForm.bindFromRequest().get
-    userService.insert(user)
-    Redirect(routes.HomeController.list())
+
+    //エラー処理
+    val errorFunction = { formWithErrors: Form[Users] =>
+      BadRequest(views.html.signup(formWithErrors))
+    }
+
+    val successFunction = { user: Users =>
+      userService.insert(user)
+      Redirect(routes.HomeController.list())
+    }
+
+    val formValidationResult = userForm.bindFromRequest
+    formValidationResult.fold(errorFunction, successFunction)
   }
 }
