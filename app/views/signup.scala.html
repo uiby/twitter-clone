@@ -1,9 +1,11 @@
 @(userForm: Form[services.Users])(implicit request: MessagesRequestHeader)
 <html>
     <head>
-        <title>Sign up</title>
+        <title>Twitter Clone</title>
     </head>
     <body>
+
+        <h1> Sign up </h1>
 
         @* Global errors are not tied to any particular userForm field *@
         @if(userForm.hasGlobalErrors) {

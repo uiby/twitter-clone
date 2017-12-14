@@ -9,6 +9,7 @@ import play.api.db.DBApi
 import scala.language.postfixOps
 
 case class Users(user_id: String, user_name: String, email: String, password: String)
+case class SigninForm(user_id: String, password: String)
 
 @javax.inject.Singleton
 class UserService @Inject() (dbapi: DBApi) {
@@ -47,6 +48,12 @@ class UserService @Inject() (dbapi: DBApi) {
         'email -> users.email,
         'password -> users.password
       ).executeInsert()
+    }
+  }
+
+  def findUserById(id: String): Option[Users] ={
+    db.withConnection { implicit connection =>
+      SQL("select * from users where user_id = {id}").on('id -> id).as(simple.singleOpt)
     }
   }
 }

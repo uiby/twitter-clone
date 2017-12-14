@@ -13,3 +13,5 @@ GET     /list                       controllers.HomeController.list()
 
 GET     /signup                        controllers.HomeController.signup()
 POST    /signup                       controllers.HomeController.userAdd()
+GET     /signin                     controllers.HomeController.signin()
+GET     /signout                    controllers.HomeController.signout()

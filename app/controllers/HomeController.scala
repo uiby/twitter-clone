@@ -5,6 +5,7 @@ import services._
 import javax.inject._
 import play.api._
 import play.api.mvc._
+import play.api.mvc.RequestHeader
 
 import play.api.data._
 import play.api.data.Forms._
@@ -25,7 +26,11 @@ class HomeController @Inject()(userService: UserService, mcc: MessagesController
    * a path of `/`.
    */
   def index() = Action { implicit request: MessagesRequest[AnyContent] =>
-    Ok(views.html.index())
+    request.session.get("user_name").map { name =>
+      Ok(views.html.index(name))
+    }.getOrElse {
+      Ok(views.html.index("guest"))
+    }
   }
 
   //ユーザー一覧
@@ -60,11 +65,50 @@ class HomeController @Inject()(userService: UserService, mcc: MessagesController
     }
 
     val successFunction = { user: Users =>
-      userService.insert(user)
-      Redirect(routes.HomeController.list())
+      userService.findUserById(user.user_id).map { user => //既にアカウントがある場合
+        BadRequest(views.html.signup(userForm))
+      }.getOrElse{
+        userService.insert(user)
+        Redirect(routes.HomeController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+      }
     }
 
     val formValidationResult = userForm.bindFromRequest
     formValidationResult.fold(errorFunction, successFunction)
+  }
+
+  //アカウント作成
+  val signinForm = Form(
+    mapping(
+      "user_id" -> nonEmptyText(minLength = 3, maxLength = 12),
+      "password" -> nonEmptyText(minLength = 5, maxLength = 12)
+    )(
+      (SigninForm.apply)
+    )(
+      (SigninForm.unapply)
+    )
+  )
+
+  //サインイン
+  def signin() = Action {implicit request: MessagesRequest[AnyContent] => 
+    //エラー処理
+    val errorFunction = { formWithErrors: Form[SigninForm] =>
+      BadRequest(views.html.signin(formWithErrors))
+    }
+
+    val successFunction = { signinForm: SigninForm =>
+      userService.findUserById(signinForm.user_id).map { user =>
+        Redirect(routes.HomeController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+      }.getOrElse{
+        Redirect(routes.HomeController.signin())
+      }
+    }
+
+    val formValidationResult = signinForm.bindFromRequest
+    formValidationResult.fold(errorFunction, successFunction)
+  }
+
+  def signout() = Action {implicit request: MessagesRequest[AnyContent] => 
+    Redirect(routes.HomeController.index()).withNewSession
   }
 }
