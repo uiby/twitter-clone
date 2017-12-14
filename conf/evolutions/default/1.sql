@@ -2,7 +2,7 @@
 
 # --- !Ups
 create table users (
-  user_id                        bigint not null auto_increment,
+  user_id                        char(12) not null,
   user_name                      varchar(255) not null,
   email                          varchar(255) not null,
   password                       varchar(8) not null,
@@ -12,7 +12,7 @@ create table users (
 create table tweets (
 	tweet_id                        bigint not null auto_increment,
 	messages                        varchar(140) not null,
-  user_id                         bigint not null,
+  user_id                         char(12) not null,
   favorite_count                  int not null default 0,
   retweet_count                   int not null default 0,
   PRIMARY KEY (tweet_id)
@@ -20,12 +20,12 @@ create table tweets (
 
 create table favorites (
 	tweet_id                        bigint not null,
-	user_id                         bigint not null
+	user_id                         char(12) not null
 );
 
 create table relations (
-	user_id                         bigint not null,
-	follower_id                    bigint not null
+	user_id                         char(12) not null,
+	follower_id                    char(12) not null
 );
 
 # --- !Downs 

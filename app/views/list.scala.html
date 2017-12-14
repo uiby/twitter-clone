@@ -1,0 +1,32 @@
+@import services._
+@(items: Seq[Users])
+<html>
+    <head>
+        <title>User List</title>
+    </head>
+    <body>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名前</th>
+                        <th>アドレス</th>
+                        <th>パスワード</th>
+                    </tr>
+                </thead>
+                <tbody>
+                	@items.map { user =>
+                	<tr>
+                		<td> @user.user_id </td>
+                		<td> @user.user_name </td>
+                		<td> @user.email </td>
+                		<td> @user.password </td>
+                	</tr>
+                }
+                </tbody>
+            </table>
+        </section>
+    </body>
+</html>

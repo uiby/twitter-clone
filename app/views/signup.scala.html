@@ -1,0 +1,21 @@
+@(userForm: Form[services.Users])(implicit request: MessagesRequestHeader)
+<html>
+    <head>
+        <title>Sign up</title>
+    </head>
+    <body>
+        
+        @helper.form(action = routes.HomeController.userAdd()) {
+        @helper.CSRF.formField
+        <fieldset>
+            @helper.inputText(userForm("user_id"), 'label -> "ユーザID")
+        	@helper.inputText(userForm("user_name"), 'label -> "ユーザ名")
+            @helper.inputText(userForm("email"), 'label -> "メールアドレス")
+            @helper.inputText(userForm("password"), 'label -> "パスワード")
+        </fieldset>
+
+        <input type="submit" value="登録">
+      }
+
+    </body>
+</html>
