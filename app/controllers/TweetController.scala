@@ -1,0 +1,56 @@
+package controllers
+
+import services._
+
+import javax.inject._
+import play.api._
+import play.api.mvc._
+import play.api.mvc.RequestHeader
+
+import play.api.data._
+import play.api.data.Forms._
+
+
+/**
+ * This controller creates an `Action` to handle HTTP requests to the
+ * application's home page.
+ */
+@Singleton
+class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
+
+  //アカウント作成
+  val tweetForm: Form[String] = Form("messages" -> nonEmptyText)
+  def tweet() = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_name").map { name =>
+      Ok(views.html.tweet(tweetForm))
+    }.getOrElse {
+      Redirect(routes.HomeController.signin())
+    }
+  }
+
+  //アカウント追加
+  def addNewTweet() = Action {implicit request: MessagesRequest[AnyContent] =>
+    //エラー処理
+    val errorFunction = { formWithErrors: Form[String] =>
+      BadRequest(views.html.tweet(formWithErrors))
+    }
+
+    val successFunction = { message: String =>
+      request.session.get("user_id").map { id => //ログイン済みの場合
+        tweetService.insertNewTweet(id, message)
+        Redirect(routes.HomeController.index())
+      }.getOrElse {
+        Redirect(routes.HomeController.signin())
+      }
+    }
+
+    val formValidationResult = tweetForm.bindFromRequest
+    formValidationResult.fold(errorFunction, successFunction)
+  }
+
+  //ユーザのツイート一覧
+  def userTweetList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val tweetList: Seq[Tweets] = tweetService.findTweetById(user_id)
+      Ok(views.html.userTweetList(tweetList))
+  }
+}

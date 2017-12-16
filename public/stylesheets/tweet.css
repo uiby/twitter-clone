@@ -1,0 +1,9 @@
+div {
+  border: solid 8px red;
+  box-sizing: border-box;
+
+  text-align: center;
+  line-height: 100px;
+  font-weight: bold;
+  font-size: 60px;
+}

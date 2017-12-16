@@ -11,7 +11,12 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /list                       controllers.HomeController.list()
 
-GET     /signup                        controllers.HomeController.signup()
-POST    /signup                       controllers.HomeController.userAdd()
+GET     /signup                     controllers.HomeController.signup()
+POST    /signup                     controllers.HomeController.userAdd()
 GET     /signin                     controllers.HomeController.signin()
 GET     /signout                    controllers.HomeController.signout()
+
+GET     /tweet                      controllers.TweetController.tweet()
+POST    /tweet                      controllers.TweetController.addNewTweet()
+
+GET     /:user_id             controllers.TweetController.userTweetList(user_id: String)

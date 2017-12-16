@@ -15,6 +15,7 @@ create table tweets (
   user_id                         char(12) not null,
   favorite_count                  int not null default 0,
   retweet_count                   int not null default 0,
+  date_time                       DATETIME not null default current_timestamp,
   PRIMARY KEY (tweet_id)
 );
 
