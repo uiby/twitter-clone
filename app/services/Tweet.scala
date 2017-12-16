@@ -1,19 +1,18 @@
 package services
-
 import javax.inject.Inject
 import org.joda.time.{DateTime, DateTimeZone}
 
-import anorm.SqlParser._
+import anorm.SqlParser._ //parser API select結果をパース
 import anorm._
 import play.api.db.DBApi
 
 import scala.language.postfixOps
 
 case class Tweets(tweet_id: BigInt, messages: String, user_id: String, favorite_count: Int, retweet_count: Int, date_time: DateTime)
-case class tweetForm(messages: String, password: String)
+case class TweetInfo(user_id: String, user_name: String, messages: String, favorite_count: Int, retweet_count: Int, date_time: DateTime)
 
 @javax.inject.Singleton
-class TweetService @Inject() (dbapi: DBApi) {
+class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
 
   private val db = dbapi.database("default")
 
@@ -31,13 +30,9 @@ class TweetService @Inject() (dbapi: DBApi) {
 
   //IDでついーと検索
   def findTweetById(user_id: String): Seq[Tweets] = {
+    val user = userService.findUserById(user_id)
     db.withConnection { implicit connection =>
-      SQL(
-        """
-          select * from tweets where user_id = {id}
-        """
-      ).on('id -> user_id
-      ).as(simple *)
+      SQL("select * from tweets where user_id = {id}").on('id -> user_id).as(simple *)
     }
   }
 

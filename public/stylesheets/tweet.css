@@ -1,9 +1,8 @@
-div {
-  border: solid 8px red;
-  box-sizing: border-box;
-
-  text-align: center;
-  line-height: 100px;
-  font-weight: bold;
-  font-size: 60px;
+.box {
+	  max-width: 300px;
+	  margin: 5px auto;
+    padding: 0.5em 1em;
+    background: #f4f4f4;
+    border-left: solid 6px #5bb7ae;
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.33);
 }

@@ -18,7 +18,7 @@ import play.api.data.Forms._
 @Singleton
 class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
 
-  //アカウント作成
+  //ツイートページ
   val tweetForm: Form[String] = Form("messages" -> nonEmptyText)
   def tweet() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_name").map { name =>
@@ -28,7 +28,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     }
   }
 
-  //アカウント追加
+  //ツイート
   def addNewTweet() = Action {implicit request: MessagesRequest[AnyContent] =>
     //エラー処理
     val errorFunction = { formWithErrors: Form[String] =>
@@ -38,7 +38,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     val successFunction = { message: String =>
       request.session.get("user_id").map { id => //ログイン済みの場合
         tweetService.insertNewTweet(id, message)
-        Redirect(routes.HomeController.index())
+        Redirect(routes.TweetController.userTweetList(id))
       }.getOrElse {
         Redirect(routes.HomeController.signin())
       }
