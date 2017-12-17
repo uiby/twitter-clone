@@ -16,7 +16,7 @@ import play.api.data.Forms._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(userService: UserService, mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
+class UserController @Inject()(userService: UserService, mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
 
   /**
    * Create an Action to render an HTML page.
@@ -69,7 +69,7 @@ class HomeController @Inject()(userService: UserService, mcc: MessagesController
         BadRequest(views.html.signup(userForm))
       }.getOrElse{
         userService.insert(user)
-        Redirect(routes.HomeController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+        Redirect(routes.UserController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
       }
     }
 
@@ -98,9 +98,9 @@ class HomeController @Inject()(userService: UserService, mcc: MessagesController
 
     val successFunction = { signinForm: SigninForm =>
       userService.findUserById(signinForm.user_id).map { user =>
-        Redirect(routes.HomeController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+        Redirect(routes.UserController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
       }.getOrElse{
-        Redirect(routes.HomeController.signin())
+        Redirect(routes.UserController.signin())
       }
     }
 
@@ -109,6 +109,20 @@ class HomeController @Inject()(userService: UserService, mcc: MessagesController
   }
 
   def signout() = Action {implicit request: MessagesRequest[AnyContent] => 
-    Redirect(routes.HomeController.index()).withNewSession
+    Redirect(routes.UserController.index()).withNewSession
+  }
+
+  def followerList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val followerList: Seq[Users] = userService.findFollower(user_id)
+    Ok(views.html.followerList(followerList))
+  }
+
+  def followingList() = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id =>
+      val followList: Seq[Users] = userService.findFollow(id)
+      Ok(views.html.followList(followList))
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
   }
 }

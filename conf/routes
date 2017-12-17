@@ -4,19 +4,22 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
+GET     /                           controllers.UserController.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /list                       controllers.HomeController.list()
+GET     /list                       controllers.UserController.list()
 
-GET     /signup                     controllers.HomeController.signup()
-POST    /signup                     controllers.HomeController.userAdd()
-GET     /signin                     controllers.HomeController.signin()
-GET     /signout                    controllers.HomeController.signout()
+GET     /signup                     controllers.UserController.signup()
+POST    /signup                     controllers.UserController.userAdd()
+GET     /signin                     controllers.UserController.signin()
+GET     /signout                    controllers.UserController.signout()
 
 GET     /tweet                      controllers.TweetController.tweet()
 POST    /tweet                      controllers.TweetController.addNewTweet()
 
-GET     /:user_id             controllers.TweetController.userTweetList(user_id: String)
+GET     /following                  controllers.UserController.followingList()
+
+GET     /:user_id                   controllers.TweetController.userTweetList(user_id: String)
+GET     /:user_id/followers         controllers.UserController.followerList(user_id: String)

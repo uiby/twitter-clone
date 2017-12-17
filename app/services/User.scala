@@ -27,7 +27,6 @@ class UserService @Inject() (dbapi: DBApi) {
 
   def list(): Seq[Users] = {
     db.withConnection { implicit connection =>
-
       SQL(
         """
           select * from users
@@ -54,6 +53,30 @@ class UserService @Inject() (dbapi: DBApi) {
   def findUserById(id: String): Option[Users] ={
     db.withConnection { implicit connection =>
       SQL("select * from users where user_id = {id}").on('id -> id).as(simple.singleOpt)
+    }
+  }
+
+  def findFollower(id: String): Seq[Users] = {
+    db.withConnection { implicit connection =>
+      SQL(    
+        """
+          select users.user_id, users.user_name, users.email, users.password
+          from users 
+          inner join relations
+          on relations.follower_id = {id} and relations.user_id = users.user_id
+        """).on('id -> id).as(simple *)
+    }
+  }
+
+  def findFollow(id: String): Seq[Users] = {
+    db.withConnection { implicit connection =>
+      SQL(    
+        """
+          select users.user_id, users.user_name, users.email, users.password
+          from users 
+          inner join relations
+          on relations.user_id = {id} and relations.follower_id = users.user_id
+        """).on('id -> id).as(simple *)
     }
   }
 }

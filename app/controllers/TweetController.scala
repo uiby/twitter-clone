@@ -24,7 +24,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     request.session.get("user_name").map { name =>
       Ok(views.html.tweet(tweetForm))
     }.getOrElse {
-      Redirect(routes.HomeController.signin())
+      Redirect(routes.UserController.signin())
     }
   }
 
@@ -40,7 +40,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
         tweetService.insertNewTweet(id, message)
         Redirect(routes.TweetController.userTweetList(id))
       }.getOrElse {
-        Redirect(routes.HomeController.signin())
+        Redirect(routes.UserController.signin())
       }
     }
 

@@ -1,0 +1,21 @@
+@import services._
+@(followList: Seq[Users])
+<html>
+    <head>
+        <title>Twitter Clone</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/tweet.css")">
+    </head>
+    <body>
+
+        <h1> follow list </h1>
+
+        <section>
+            @followList.map { follow =>
+              <div class="box">
+                name: @follow.user_name
+                id: @follow.user_id
+              </div>
+            }
+        </section>
+    </body>
+</html>
