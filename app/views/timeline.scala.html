@@ -1,10 +1,10 @@
 @import services._
-@(tweetList: Seq[Tweets], user_id: String)
+@(timeline: Seq[Tweets], user_id: String)
 
 @main(user_id) {
-  <h1>Tweet List</h1>
+  <h1>Timeline</h1>
 
-  @tweetList.map { tweet =>
+  @timeline.map { tweet =>
     <div class="box">
       @tweet.user_id @tweet.date_time.toString("yyyy/MM/dd")
       <br></br>

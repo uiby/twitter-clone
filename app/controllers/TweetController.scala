@@ -51,6 +51,16 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   //ユーザのツイート一覧
   def userTweetList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val tweetList: Seq[Tweets] = tweetService.findTweetById(user_id)
-      Ok(views.html.userTweetList(tweetList))
+      Ok(views.html.userTweetList(tweetList, user_id))
+  }
+
+  def showTimeline() = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id =>
+      val timeline = tweetService.getTimeline(id)
+      Ok(views.html.timeline(timeline, id))
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
+
   }
 }

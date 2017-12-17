@@ -36,6 +36,19 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
+  def getTimeline(user_id: String): Seq[Tweets] = {
+    db.withConnection { implicit connection =>
+      SQL(    
+        """
+          select distinct tweets.tweet_id, tweets.user_id, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time
+          from tweets 
+          inner join relations
+          on tweets.user_id = {id} or (relations.user_id = {id} and tweets.user_id = relations.follower_id) 
+          order by tweets.date_time desc
+        """).on('id -> user_id).as(simple *)
+    }
+  }
+
   //新しいツイート
   def insertNewTweet(id: String, message: String) = {
     db.withConnection { implicit connection =>

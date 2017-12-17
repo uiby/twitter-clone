@@ -25,11 +25,11 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index() = Action { implicit request: MessagesRequest[AnyContent] =>
-    request.session.get("user_name").map { name =>
-      Ok(views.html.index(name))
+  def home() = Action { implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id =>
+      Redirect(routes.TweetController.showTimeline())
     }.getOrElse {
-      Ok(views.html.index("guest"))
+      Ok(views.html.home())
     }
   }
 
@@ -69,7 +69,7 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
         BadRequest(views.html.signup(userForm))
       }.getOrElse{
         userService.insert(user)
-        Redirect(routes.UserController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+        Redirect(routes.UserController.home()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
       }
     }
 
@@ -98,7 +98,7 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
 
     val successFunction = { signinForm: SigninForm =>
       userService.findUserById(signinForm.user_id).map { user =>
-        Redirect(routes.UserController.index()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+        Redirect(routes.UserController.home()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
       }.getOrElse{
         Redirect(routes.UserController.signin())
       }
@@ -109,18 +109,18 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
   }
 
   def signout() = Action {implicit request: MessagesRequest[AnyContent] => 
-    Redirect(routes.UserController.index()).withNewSession
+    Redirect(routes.UserController.home()).withNewSession
   }
 
   def followerList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val followerList: Seq[Users] = userService.findFollower(user_id)
-    Ok(views.html.followerList(followerList))
+    Ok(views.html.followerList(followerList, user_id))
   }
 
   def followingList() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
       val followList: Seq[Users] = userService.findFollow(id)
-      Ok(views.html.followList(followList))
+      Ok(views.html.followList(followList, id))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
