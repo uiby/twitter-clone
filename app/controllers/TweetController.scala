@@ -8,6 +8,7 @@ import play.api.mvc._
 import play.api.mvc.RequestHeader
 
 import play.api.data._
+import play.api.data.Form
 import play.api.data.Forms._
 
 
@@ -54,15 +55,6 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     Ok(views.html.userTweetList(tweetList, user_id))
   }
 
-  def userTweetList() = Action {implicit request: MessagesRequest[AnyContent] =>
-    request.session.get("user_id").map { id =>
-      val tweetList: Seq[Tweets] = tweetService.findTweetById(id)
-      Ok(views.html.userTweetList(tweetList, id))
-    }.getOrElse {
-      Redirect(routes.UserController.signin())
-    }
-  }
-
   def showTimeline() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
       val timeline = tweetService.getTimeline(id)
@@ -73,8 +65,8 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   }
 
   def search() = Action { implicit request: MessagesRequest[AnyContent] =>
-    var qk: Map[String, String] = request.queryString.map { case (k, v) => k -> v.mkString}
-    val tweetList = tweetService.findTweetByWord(qk("q"))
-    Ok(views.html.tweetList(tweetList)) 
+    var qk: Map[String,String] = request.queryString.map { case (k,v) => k -> v.mkString }
+    val tweetList: Seq[Tweets] = tweetService.findTweetByWord(qk("q"))
+    Ok(views.html.tweetList(qk("q"), tweetList)) 
   }
 }

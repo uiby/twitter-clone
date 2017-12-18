@@ -38,7 +38,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
 
   def findTweetByWord(word: String): Seq[Tweets] = {
     db.withConnection { implicit connection =>
-      SQL("SELECT * FROM tweets WHERE messages LIKE '%{str}%'").on('str -> word).as(simple *)
+      SQL(s"""SELECT * FROM tweets WHERE messages LIKE "%$word%" ORDER BY date_time DESC""").as(simple *)
     }
   }
 

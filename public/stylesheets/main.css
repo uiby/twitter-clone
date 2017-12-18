@@ -2,7 +2,8 @@
 	border: solid #CCCCCC;
 	border-width: 1px 0;
 	padding: 10px 0;
-	max-width: 960px;
+	height: 25px;
+	min-width: 1400px;
 	margin: auto;
 }
 
@@ -19,7 +20,7 @@
 
 .globalNavi ul li {
 	list-style: none;
-	width: 240px;
+	min-width: 150px;
 	float: left;
 	border-left: solid 1px #CCCCCC;
 	padding: 0 10px;
@@ -42,4 +43,14 @@
 
 .globalNavi ul li a:hover {
 	background-color: #F2F2E5;
+}
+
+header {
+	margin: 0px auto;
+	position: fixed;
+	background-color: rgba(255, 207, 194, 1);
+}
+
+body {
+	margin: 0px auto;
 }

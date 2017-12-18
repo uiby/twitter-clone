@@ -1,8 +1,10 @@
 @import services._
-@(tweetList: Seq[Tweets])
+@(searchText: String, tweetList: Seq[Tweets])
 
 @home() {
-  <h1>Tweet List</h1>
+  <h1>Tweet List  search -> @searchText</h1>
+
+  <br></br>
 
   @tweetList.map { tweet =>
     <div class="box">

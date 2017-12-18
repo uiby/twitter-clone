@@ -17,6 +17,7 @@ GET     /signout                    controllers.UserController.signout()
 
 GET     /tweet                      controllers.TweetController.tweet()
 POST    /tweet                      controllers.TweetController.addNewTweet()
+GET     /search                     controllers.TweetController.search()
 
 GET     /                           controllers.UserController.home()
 GET     /timeline                   controllers.TweetController.showTimeline()
@@ -24,4 +25,3 @@ GET     /:user_id                   controllers.TweetController.userTweetList(us
 GET     /:user_id/following         controllers.UserController.followingList(user_id: String)
 GET     /:user_id/followers         controllers.UserController.followerList(user_id: String)
 
-GET     /search                     controllers.TweetController.search()
