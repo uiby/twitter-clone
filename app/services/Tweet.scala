@@ -32,7 +32,13 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
   def findTweetById(user_id: String): Seq[Tweets] = {
     val user = userService.findUserById(user_id)
     db.withConnection { implicit connection =>
-      SQL("select * from tweets where user_id = {id}").on('id -> user_id).as(simple *)
+      SQL("SELECT * FROM tweets WHERE user_id = {id}").on('id -> user_id).as(simple *)
+    }
+  }
+
+  def findTweetByWord(word: String): Seq[Tweets] = {
+    db.withConnection { implicit connection =>
+      SQL("SELECT * FROM tweets WHERE messages LIKE '%{str}%'").on('str -> word).as(simple *)
     }
   }
 
@@ -40,8 +46,8 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     db.withConnection { implicit connection =>
       SQL(    
         """
-          select distinct tweets.tweet_id, tweets.user_id, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time
-          from tweets 
+          SELECT distinct tweets.tweet_id, tweets.user_id, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time
+          FROM tweets 
           inner join relations
           on tweets.user_id = {id} or (relations.user_id = {id} and tweets.user_id = relations.follower_id) 
           order by tweets.date_time desc

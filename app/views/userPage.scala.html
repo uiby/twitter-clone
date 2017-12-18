@@ -11,10 +11,10 @@
 
         <nav class="globalNavi">
             <ul>
-                <li><a href="@controllers.routes.TweetController.showTimeline()">タイムライン</a></li>
                 <li><a href="@controllers.routes.TweetController.userTweetList(user_id)">ツイート</a></li>
-                <li><a href="@controllers.routes.UserController.followingList()">フォロー</a></li>
+                <li><a href="@controllers.routes.UserController.followingList(user_id)">フォロー</a></li>
                 <li><a href="@controllers.routes.UserController.followerList(user_id)">フォロワー</a></li>
+                <li><a href="@controllers.routes.TweetController.showTimeline()">ライク</a></li>
             </ul>
         </nav>
 

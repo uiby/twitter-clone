@@ -1,7 +1,7 @@
 @import services._
 @(followList: Seq[Users], user_id: String)
 
-@main(user_id) {
+@userPage(user_id) {
   <h1>Follow List</h1>
 
   @followList.map { follow =>

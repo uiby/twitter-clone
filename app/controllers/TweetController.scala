@@ -51,16 +51,30 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   //ユーザのツイート一覧
   def userTweetList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val tweetList: Seq[Tweets] = tweetService.findTweetById(user_id)
-      Ok(views.html.userTweetList(tweetList, user_id))
+    Ok(views.html.userTweetList(tweetList, user_id))
+  }
+
+  def userTweetList() = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id =>
+      val tweetList: Seq[Tweets] = tweetService.findTweetById(id)
+      Ok(views.html.userTweetList(tweetList, id))
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
   }
 
   def showTimeline() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
       val timeline = tweetService.getTimeline(id)
-      Ok(views.html.timeline(timeline, id))
+      Ok(views.html.timeline(timeline))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
+  }
 
+  def search() = Action { implicit request: MessagesRequest[AnyContent] =>
+    var qk: Map[String, String] = request.queryString.map { case (k, v) => k -> v.mkString}
+    val tweetList = tweetService.findTweetByWord(qk("q"))
+    Ok(views.html.tweetList(tweetList)) 
   }
 }

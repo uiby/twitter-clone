@@ -26,10 +26,11 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
    * a path of `/`.
    */
   def home() = Action { implicit request: MessagesRequest[AnyContent] =>
-    request.session.get("user_id").map { id =>
+    request.session.get("user_id").map { id => //ログイン済みの場合
       Redirect(routes.TweetController.showTimeline())
     }.getOrElse {
-      Ok(views.html.home())
+      Redirect(routes.UserController.list())
+      //TODO ログインしてない場合のホームページ
     }
   }
 
@@ -117,12 +118,8 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
     Ok(views.html.followerList(followerList, user_id))
   }
 
-  def followingList() = Action {implicit request: MessagesRequest[AnyContent] =>
-    request.session.get("user_id").map { id =>
-      val followList: Seq[Users] = userService.findFollow(id)
-      Ok(views.html.followList(followList, id))
-    }.getOrElse {
-      Redirect(routes.UserController.signin())
-    }
+  def followingList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val followList: Seq[Users] = userService.findFollow(user_id)
+    Ok(views.html.followList(followList, user_id))
   }
 }

@@ -1,7 +1,7 @@
 @import services._
 @(tweetList: Seq[Tweets], user_id: String)
 
-@main(user_id) {
+@userPage(user_id) {
   <h1>Tweet List</h1>
 
   @tweetList.map { tweet =>
