@@ -1,4 +1,4 @@
-@import services._
+@import models._
 @(timeline: Seq[Tweets])
 
 @home() {
@@ -6,9 +6,11 @@
 
   @timeline.map { tweet =>
     <div class="box">
-      @tweet.user_id @tweet.date_time.toString("yyyy/MM/dd")
+    <div class="user_">@tweet.user_id @tweet.date_time.toString("yyyy/MM/dd")
       <br></br>
       @tweet.messages
+
+      @tweet.favorite_count @tweet.retweet_count
     </div>
   }
 }

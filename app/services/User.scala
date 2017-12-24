@@ -1,5 +1,5 @@
 package services
-
+import models._
 import javax.inject.Inject
 
 import anorm.SqlParser._
@@ -7,9 +7,6 @@ import anorm._
 import play.api.db.DBApi
 
 import scala.language.postfixOps
-
-case class Users(user_id: String, user_name: String, email: String, password: String)
-case class SigninForm(user_id: String, password: String)
 
 @javax.inject.Singleton
 class UserService @Inject() (dbapi: DBApi) {

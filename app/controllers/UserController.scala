@@ -1,5 +1,6 @@
 package controllers
 
+import models._
 import services._
 
 import javax.inject._

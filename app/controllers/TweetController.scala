@@ -1,16 +1,19 @@
 package controllers
 
+import models._
 import services._
 
 import javax.inject._
 import play.api._
 import play.api.mvc._
 import play.api.mvc.RequestHeader
+import play.api.routing._
 
 import play.api.data._
 import play.api.data.Form
 import play.api.data.Forms._
 
+import play.filters.csrf.CSRF
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -63,10 +66,41 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
       Redirect(routes.UserController.signin())
     }
   }
-
+  var question: String = ""
   def search() = Action { implicit request: MessagesRequest[AnyContent] =>
     var qk: Map[String,String] = request.queryString.map { case (k,v) => k -> v.mkString }
-    val tweetList: Seq[Tweets] = tweetService.findTweetByWord(qk("q"))
-    Ok(views.html.tweetList(qk("q"), tweetList)) 
+    if (qk.contains("q"))
+      question = qk("q")
+    val tweetList: Seq[TweetInfo] = tweetService.findTweetByWord(question)
+    Ok(views.html.tweetList(question, tweetList)) 
+  }
+
+  def favorite(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id =>
+      val temp = BigInt(tweet_id)
+      tweetService.favorite(temp, id)
+      Ok
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
+  }
+
+  def retweet(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id =>
+      val temp = BigInt(tweet_id)
+      tweetService.retweet(temp, id)
+      Ok
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
+  }
+
+  def javascriptRoutes() = Action {implicit request: MessagesRequest[AnyContent] =>
+    Ok(
+        JavaScriptReverseRouter("jsRoutes")(
+          routes.javascript.TweetController.favorite,
+          routes.javascript.TweetController.retweet
+        )
+    ).as("text/javascript")
   }
 }
