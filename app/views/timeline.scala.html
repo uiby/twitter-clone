@@ -1,16 +1,35 @@
 @import models._
-@(timeline: Seq[Tweets])
+@(timeline: Seq[TweetInfo])
 
 @home() {
   <h1>Timeline</h1>
 
   @timeline.map { tweet =>
     <div class="box">
-    <div class="user_">@tweet.user_id @tweet.date_time.toString("yyyy/MM/dd")
-      <br></br>
-      @tweet.messages
+    	<div class="name">
+    	@tweet.user_name @tweet.user_id
+      </div>
+    	<div class="date">
+    		@tweet.date_time.toString("yyyy/MM/dd")
+      </div>
+    	<div class="content">
+        @tweet.messages
+    	</div>
 
-      @tweet.favorite_count @tweet.retweet_count
+
+    	<div class="form">
+        <form class="button">
+          <input type="hidden" class="user_id" value="@tweet.user_id">
+          <button class="fav_button" value="@tweet.tweet_id" type="submit">fav</button>
+        </form>
+        @tweet.favorite_count 
+
+        <form class="button">
+          <input type="hidden" class="user_id" value="@tweet.user_id">
+          <button class="retweet_button" value="@tweet.tweet_id" type="submit">retweet</button>
+        </form>
+        @tweet.retweet_count
+    	</div>
     </div>
   }
 }

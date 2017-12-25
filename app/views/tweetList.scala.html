@@ -1,6 +1,5 @@
 @import models._
 @import controllers._
-@import helper._
 @(searchText: String, tweetList: Seq[TweetInfo])(implicit request: RequestHeader)
 
 @home() {
@@ -22,7 +21,6 @@
         @tweet.messages
     	</div>
 
-
     	<div class="form">
         <form class="button">
           <input type="hidden" class="user_id" value="@tweet.user_id">
@@ -36,7 +34,6 @@
         </form>
         @tweet.retweet_count
     	</div>
-
     </div>
   }
 }

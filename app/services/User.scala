@@ -76,4 +76,30 @@ class UserService @Inject() (dbapi: DBApi) {
         """).on('id -> id).as(simple *)
     }
   }
+
+  def follow(user_id: String, follow_id: String) = {
+    db.withConnection { implicit connection =>
+      SQL(
+        """
+          insert into relations values ({user_id}, {follower_id})
+        """
+      ).on(
+        'user_id -> follow_id,
+        'follower_id -> user_id
+      ).executeInsert()
+    }
+  }
+
+  def UnFollow(user_id: String, follow_id: String) = {
+    db.withConnection { implicit connection =>
+      SQL(
+        """
+          DELETE FORM relations WHERE user_id = {user_id} AND follower_id = {follower_id}
+        """
+      ).on(
+        'user_id -> follow_id,
+        'follower_id -> user_id
+      ).execute()
+    }
+  }
 }

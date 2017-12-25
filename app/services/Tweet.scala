@@ -42,10 +42,16 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
   }
 
   //IDでついーと検索
-  def findTweetById(user_id: String): Seq[Tweets] = {
-    val user = userService.findUserById(user_id)
+  def findTweetById(user_id: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
-      SQL("SELECT * FROM tweets WHERE user_id = {id}").on('id -> user_id).as(simple *)
+      SQL(
+        s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
+        FROM tweets 
+        INNER JOIN users
+        ON tweets.user_id = users.user_id
+        WHERE tweets.user_id = "$user_id" 
+        ORDER BY date_time DESC"""
+        ).on().as(tweetInfo *)
     }
   }
 
@@ -62,16 +68,17 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
-  def getTimeline(user_id: String): Seq[Tweets] = {
+  def getTimeline(user_id: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(    
-        """
-          SELECT distinct tweets.tweet_id, tweets.user_id, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time
-          FROM tweets 
-          inner join relations
-          on tweets.user_id = {id} or (relations.user_id = {id} and tweets.user_id = relations.follower_id) 
-          order by tweets.date_time desc
-        """).on('id -> user_id).as(simple *)
+        s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
+        FROM tweets 
+        INNER JOIN users
+        ON tweets.user_id = users.user_id
+        INNER JOIN relations
+        on tweets.user_id = "$user_id" or (relations.user_id = "$user_id" and tweets.user_id = relations.follower_id) 
+        ORDER BY date_time DESC"""
+        ).on().as(tweetInfo *)
     }
   }
 
@@ -160,6 +167,5 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         insertNewTweet(user_id, result.get.messages, result.get.user_id)
       }
     }
-
   }
 }

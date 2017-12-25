@@ -54,7 +54,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
 
   //ユーザのツイート一覧
   def userTweetList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
-    val tweetList: Seq[Tweets] = tweetService.findTweetById(user_id)
+    val tweetList = tweetService.findTweetById(user_id)
     Ok(views.html.userTweetList(tweetList, user_id))
   }
 

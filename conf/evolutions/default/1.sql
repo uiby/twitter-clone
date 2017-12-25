@@ -34,7 +34,8 @@ create table retweets (
 
 create table relations (
 	user_id                         char(12) not null,
-	follower_id                    char(12) not null
+	follower_id                    char(12) not null,
+  PRIMARY KEY (user_id, follower_id)
 );
 
 # --- !Downs 

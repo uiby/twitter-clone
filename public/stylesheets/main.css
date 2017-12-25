@@ -52,5 +52,13 @@ header {
 }
 
 body {
-	margin: 0px auto;
+	margin: 0px auto;		
+}
+
+body .body-head {
+}
+
+body .body-main {
+	padding: 30px 0 0 0;    /* 上下に160pxを余白を取る */
+	margin: 0px auto;	
 }

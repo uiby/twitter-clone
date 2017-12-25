@@ -1,14 +1,13 @@
-.box {
-	  max-width: 300px;
-	  margin: 5px auto ;
-    padding: 1px 1px 3px 10px;
-    background: #f4f4f4;
-    border-left: solid 6px #5bb7ae;
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.33);
-
+.main .box {
+	max-width: 300px;
+	margin: 5px auto ;
+  padding: 1px 1px 3px 10px;
+  background: #f4f4f4;
+  border-left: solid 6px #5bb7ae;
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.33);
 }
 
-.box .name, .date {
+.main .box .name, .date {
 	margin: 0;
 	padding: 0;
 	float: left;
@@ -17,21 +16,21 @@
 	border-bottom: solid 1px rgba(200, 200, 255, 1);
 }
 
-.box .name {
+.main .box .name {
 	text-align: left;
 }
-.box .date {
+.main .box .date {
 	text-align: right;
 }
 
-.box .content {
+.main .box .content {
 	clear: both;
 }
 
-.box .form {
+.main .box .form {
 	border-top: dashed 1px rgba(150, 150, 255, 1);
 }
 
-.box .form .button {
+.main .box .form .button {
 	display: inline;
 }
