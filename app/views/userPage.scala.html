@@ -1,4 +1,4 @@
-@(user_id: String)(main: Html)(side: Html)
+@(user_id: String)(main: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,9 +20,6 @@
                 <ul>
                     <li><a href="@controllers.routes.UserController.home()">ホーム</a></li>
                     <li><a href="@controllers.routes.TweetController.userTweetList(user_id)">ツイート</a></li>
-                    <li><a href="@controllers.routes.UserController.followingList(user_id)">フォロー</a></li>
-                    <li><a href="@controllers.routes.UserController.followerList(user_id)">フォロワー</a></li>
-                    <li><a href="@controllers.routes.TweetController.showTimeline()">ライク</a></li>
                     <li>　</li>
                     <li>　</li>
                     <li>
@@ -43,7 +40,12 @@
                     @main
                 </div>
                 <div class="side">
-                    @side
+                    <div class="box">
+                      <div class="name">
+                        <a href="@controllers.routes.TweetController.userTweetList(user_id)">@user_id</a>
+                      </div>
+                    </div>
+
 
                     <div class="top-box">
                       <div class="child-box">
@@ -60,7 +62,7 @@
                           <a href="@controllers.routes.UserController.followerList(user_id)">フォロワー</a>
                         </div>
                         <div class="user-info favorite">
-                          <a href="@controllers.routes.TweetController.showTimeline()">ライク</a>
+                          <a href="@controllers.routes.TweetController.userFavoriteList(user_id)">ライク</a>
                         </div>
                       </div>
                     </div>

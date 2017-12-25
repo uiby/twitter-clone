@@ -34,3 +34,12 @@
 .main .box .form .button {
 	display: inline;
 }
+
+.main .box a {
+	text-decoration: none;
+	display: block;
+}
+
+.main .box a:hover {
+	text-decoration: underline;
+}

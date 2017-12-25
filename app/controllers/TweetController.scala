@@ -57,6 +57,11 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     val tweetList = tweetService.findTweetById(user_id)
     Ok(views.html.userTweetList(tweetList, user_id))
   }
+  //ユーザのファボ一覧
+  def userFavoriteList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val tweetList = tweetService.findTweetByFavorite(user_id)
+    Ok(views.html.userTweetList(tweetList, user_id))
+  }
 
   def showTimeline() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>

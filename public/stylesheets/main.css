@@ -1,7 +1,7 @@
 .globalNavi {
 	border: solid #CCCCCC;
 	border-width: 1px 0;
-	padding: 10px 0;
+	padding: 5px 0;
 	height: 25px;
 	min-width: 1400px;
 	margin: auto;
@@ -26,7 +26,7 @@
 	padding: 0 10px;
 	box-sizing: border-box;
 	text-align: center;
-	font-size: 15px;
+	font-size: 12px;
 	line-height: 1.3;
 }
 

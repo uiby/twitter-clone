@@ -25,6 +25,7 @@ GET     /javascripteRoute           controllers.TweetController.javascriptRoutes
 GET     /                           controllers.UserController.home()
 GET     /timeline                   controllers.TweetController.showTimeline()
 GET     /:user_id                   controllers.TweetController.userTweetList(user_id: String)
+GET     /:user_id/favorites         controllers.TweetController.userFavoriteList(user_id: String)
 GET     /:user_id/following         controllers.UserController.followingList(user_id: String)
 GET     /:user_id/followers         controllers.UserController.followerList(user_id: String)
 
