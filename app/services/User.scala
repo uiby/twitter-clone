@@ -26,7 +26,7 @@ class UserService @Inject() (dbapi: DBApi) {
     db.withConnection { implicit connection =>
       SQL(
         """
-          select * from users
+          SELECT * FROM users
         """
       ).as(simple *)
     }
@@ -36,7 +36,7 @@ class UserService @Inject() (dbapi: DBApi) {
     db.withConnection { implicit connection =>
       SQL(
         """
-        insert into users values ({user_id}, {user_name}, {email}, {password})
+        INSERT INTO users VALUES ({user_id}, {user_name}, {email}, {password})
         """
       ).on(
         'user_id -> users.user_id,
@@ -49,7 +49,7 @@ class UserService @Inject() (dbapi: DBApi) {
 
   def findUserById(id: String): Option[Users] ={
     db.withConnection { implicit connection =>
-      SQL("select * from users where user_id = {id}").on('id -> id).as(simple.singleOpt)
+      SQL("SELECT * FROM users WHERE user_id = {id}").on('id -> id).as(simple.singleOpt)
     }
   }
 
@@ -57,10 +57,10 @@ class UserService @Inject() (dbapi: DBApi) {
     db.withConnection { implicit connection =>
       SQL(    
         """
-          select users.user_id, users.user_name, users.email, users.password
-          from users 
-          inner join relations
-          on relations.follower_id = {id} and relations.user_id = users.user_id
+          SELECT users.user_id, users.user_name, users.email, users.password
+          FROM users 
+          INNER join relations
+          ON relations.follower_id = {id} AND relations.user_id = users.user_id
         """).on('id -> id).as(simple *)
     }
   }
@@ -69,10 +69,10 @@ class UserService @Inject() (dbapi: DBApi) {
     db.withConnection { implicit connection =>
       SQL(    
         """
-          select users.user_id, users.user_name, users.email, users.password
-          from users 
-          inner join relations
-          on relations.user_id = {id} and relations.follower_id = users.user_id
+          SELECT users.user_id, users.user_name, users.email, users.password
+          FROM users 
+          INNER join relations
+          ON relations.user_id = {id} AND relations.follower_id = users.user_id
         """).on('id -> id).as(simple *)
     }
   }
@@ -81,7 +81,7 @@ class UserService @Inject() (dbapi: DBApi) {
     db.withConnection { implicit connection =>
       SQL(
         """
-          insert into relations values ({user_id}, {follower_id})
+          INSERT INTO relations VALUES ({user_id}, {follower_id})
         """
       ).on(
         'user_id -> follow_id,

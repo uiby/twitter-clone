@@ -119,7 +119,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         INNER JOIN users
         ON tweets.user_id = users.user_id
         INNER JOIN relations
-        on tweets.user_id = "$user_id" or (relations.user_id = "$user_id" and tweets.user_id = relations.follower_id) 
+        on tweets.user_id = "$user_id" or (relations.user_id = "$user_id" AND tweets.user_id = relations.follower_id) 
         ORDER BY date_time DESC"""
         ).on().as(tweetInfo *)
     }
@@ -130,7 +130,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     db.withConnection { implicit connection =>
       SQL(
         """
-        insert into tweets (messages, user_id) values ({messages}, {user_id})
+        INSERT INTO tweets (messages, user_id) VALUES ({messages}, {user_id})
         """
       ).on(
         'messages -> message,
@@ -143,7 +143,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     db.withConnection { implicit connection =>
       SQL(
         """
-        insert into tweets (messages, user_id, original_user_id) values ({messages}, {user_id}, {original_user_id})
+        INSERT INTO tweets (messages, user_id, original_user_id) VALUES ({messages}, {user_id}, {original_user_id})
         """
       ).on(
         'messages -> message,
@@ -155,20 +155,20 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
 
   def favorite(tweet_id: BigInt, user_id: String) = {
     db.withConnection { implicit connection =>
-      var hasFav = SQL("""select * from favorites where tweet_id = {tweet_id} and user_id = {user_id}"""
+      var hasFav = SQL("""SELECT * FROM favorites WHERE tweet_id = {tweet_id} AND user_id = {user_id}"""
         ).on(
           'tweet_id -> tweet_id,
           'user_id -> user_id
         ).as(fav.singleOpt)
 
       if (hasFav == None) {
-        SQL("""insert into favorites values ({tweet_id}, {user_id})"""
+        SQL("""INSERT INTO favorites VALUES ({tweet_id}, {user_id})"""
         ).on(
           'tweet_id -> tweet_id,
           'user_id -> user_id
         ).executeInsert()
   
-        var fav_count = SQL("""select favorite_count from tweets where tweet_id = {tweet_id}"""
+        var fav_count = SQL("""SELECT favorite_count FROM tweets WHERE tweet_id = {tweet_id}"""
           ).on(
             'tweet_id -> tweet_id
           ).as(get[Int]("favorite_count").singleOpt)
@@ -176,9 +176,9 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         if (fav_count != None) {
           SQL (
             """
-              update tweets
-              set favorite_count = {favorite_count}
-              where tweet_id = {id}
+              UPDATE tweets
+              SET favorite_count = {favorite_count}
+              WHERE tweet_id = {id}
             """
           ).on(
             'id -> tweet_id,
@@ -191,7 +191,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
 
   def retweet(tweet_id: BigInt, user_id: String) = {
     db.withConnection { implicit connection =>
-      var hasRet = SQL("""select * from retweets where tweet_id = {tweet_id} and user_id = {user_id}"""
+      var hasRet = SQL("""SELECT * FROM retweets WHERE tweet_id = {tweet_id} AND user_id = {user_id}"""
         ).on(
           'tweet_id -> tweet_id,
           'user_id -> user_id
@@ -200,21 +200,21 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
       if (hasRet == None) {
         SQL(
           """
-            insert into retweets values ({tweet_id}, {user_id})
+            INSERT INTO retweets VALUES ({tweet_id}, {user_id})
           """
         ).on(
           'tweet_id -> tweet_id,
           'user_id -> user_id
         ).executeInsert()
   
-        var result = SQL(s"""select * from tweets where tweet_id = $tweet_id""").as(simple.singleOpt)
+        var result = SQL(s"""SELECT * FROM tweets WHERE tweet_id = $tweet_id""").as(simple.singleOpt)
   
         if (result != None) {
           SQL (
             """
-              update tweets
-              set retweet_count = {retweet_count}
-              where tweet_id = {id}
+              UPDATE tweets
+              SET retweet_count = {retweet_count}
+              WHERE tweet_id = {id}
             """
           ).on(
             'id -> tweet_id,
@@ -232,7 +232,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     db.withConnection { implicit connection =>
       SQL(
         """
-          insert into replys values ({tweet_id}, {reply_tweet_id}, {user_id})
+          INSERT INTO replys VALUES ({tweet_id}, {reply_tweet_id}, {user_id})
         """
       ).on(
         'tweet_id -> tweet_id,
