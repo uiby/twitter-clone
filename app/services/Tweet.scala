@@ -41,6 +41,21 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
+  val fav = {
+    get[BigInt]("favorites.tweet_id") ~
+    get[String]("favorites.user_id") map {
+      case tweet_id ~ user_id
+      => Favorites(tweet_id, user_id)
+    }
+  }
+  val ret = {
+    get[BigInt]("retweets.tweet_id") ~
+    get[String]("retweets.user_id") map {
+      case tweet_id ~ user_id
+      => Retweets(tweet_id, user_id)
+    }
+  }
+
   //IDでついーと検索
   def findTweetById(user_id: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
@@ -140,59 +155,74 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
 
   def favorite(tweet_id: BigInt, user_id: String) = {
     db.withConnection { implicit connection =>
-      SQL(
-        """
-        insert into favorites values ({tweet_id}, {user_id})
-        """
-      ).on(
-        'tweet_id -> tweet_id,
-        'user_id -> user_id
-      ).executeInsert()
-
-      var fav_count = SQL(s"""select favorite_count from tweets where tweet_id = $tweet_id"""
-        ).as(get[Int]("favorite_count").singleOpt)
-
-      if (fav_count != None) {
-        SQL (
-          """
-            update tweets
-            set favorite_count = {favorite_count}
-            where tweet_id = {id}
-          """
+      var hasFav = SQL("""select * from favorites where tweet_id = {tweet_id} and user_id = {user_id}"""
         ).on(
-          'id -> tweet_id,
-          'favorite_count -> (fav_count.get + 1).toString
-        ).executeUpdate()
+          'tweet_id -> tweet_id,
+          'user_id -> user_id
+        ).as(fav.singleOpt)
+
+      if (hasFav == None) {
+        SQL("""insert into favorites values ({tweet_id}, {user_id})"""
+        ).on(
+          'tweet_id -> tweet_id,
+          'user_id -> user_id
+        ).executeInsert()
+  
+        var fav_count = SQL("""select favorite_count from tweets where tweet_id = {tweet_id}"""
+          ).on(
+            'tweet_id -> tweet_id
+          ).as(get[Int]("favorite_count").singleOpt)
+  
+        if (fav_count != None) {
+          SQL (
+            """
+              update tweets
+              set favorite_count = {favorite_count}
+              where tweet_id = {id}
+            """
+          ).on(
+            'id -> tweet_id,
+            'favorite_count -> (fav_count.get + 1).toString
+          ).executeUpdate()
+        }
       }
     }
   }
 
   def retweet(tweet_id: BigInt, user_id: String) = {
     db.withConnection { implicit connection =>
-      SQL(
-        """
-          insert into retweets values ({tweet_id}, {user_id})
-        """
-      ).on(
-        'tweet_id -> tweet_id,
-        'user_id -> user_id
-      ).executeInsert()
+      var hasRet = SQL("""select * from retweets where tweet_id = {tweet_id} and user_id = {user_id}"""
+        ).on(
+          'tweet_id -> tweet_id,
+          'user_id -> user_id
+        ).as(fav.singleOpt)
 
-      var result = SQL(s"""select * from tweets where tweet_id = $tweet_id""").as(simple.singleOpt)
-
-      if (result != None) {
-        SQL (
+      if (hasRet == None) {
+        SQL(
           """
-            update tweets
-            set retweet_count = {retweet_count}
-            where tweet_id = {id}
+            insert into retweets values ({tweet_id}, {user_id})
           """
         ).on(
-          'id -> tweet_id,
-          'retweet_count -> (result.get.retweet_count + 1).toString
-        ).executeUpdate()
-
-        insertNewTweet(user_id, result.get.messages, result.get.user_id)
+          'tweet_id -> tweet_id,
+          'user_id -> user_id
+        ).executeInsert()
+  
+        var result = SQL(s"""select * from tweets where tweet_id = $tweet_id""").as(simple.singleOpt)
+  
+        if (result != None) {
+          SQL (
+            """
+              update tweets
+              set retweet_count = {retweet_count}
+              where tweet_id = {id}
+            """
+          ).on(
+            'id -> tweet_id,
+            'retweet_count -> (result.get.retweet_count + 1).toString
+          ).executeUpdate()
+  
+          insertNewTweet(user_id, result.get.messages, result.get.user_id)
+        }
       }
     }
   }

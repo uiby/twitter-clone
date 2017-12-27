@@ -22,6 +22,17 @@ import play.filters.csrf.CSRF
  */
 @Singleton
 class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
+  implicit val TweetInfoWrites = new Writes[TweetInfo] {
+    def writes(tweet: TweetInfo) = Json.obj(
+      "tweet_id" -> tweet.tweet_id.toString,
+      "user_name" -> tweet.user_name,
+      "user_id" -> tweet.user_id,
+      "messages" -> tweet.messages,
+      "favorite_count" -> tweet.favorite_count,
+      "retweet_count" -> tweet.retweet_count,
+      "date_time" -> tweet.date_time.toString("yyyy/MM/dd")      
+    )
+  }
 
   //ツイートページ
   val tweetForm: Form[String] = Form("messages" -> nonEmptyText)
@@ -85,7 +96,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     request.session.get("user_id").map { id =>
       val temp = BigInt(tweet_id)
       tweetService.favorite(temp, id)
-      Ok
+      Ok(Json.toJson(tweetService.findTweetByTweetId(tweet_id).get))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -95,7 +106,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     request.session.get("user_id").map { id =>
       val temp = BigInt(tweet_id)
       tweetService.retweet(temp, id)
-      Ok
+      Ok(Json.toJson(tweetService.findTweetByTweetId(tweet_id).get))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -115,18 +126,6 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   def getTweet(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
     val tweetInfo = tweetService.findTweetByTweetId(tweet_id)
     val replyInfo = tweetService.getReply(tweet_id)
-
-    implicit val TweetInfoWrites = new Writes[TweetInfo] {
-      def writes(tweet: TweetInfo) = Json.obj(
-        "tweet_id" -> tweet.tweet_id.toString,
-        "user_name" -> tweet.user_name,
-        "user_id" -> tweet.user_id,
-        "messages" -> tweet.messages,
-        "favorite_count" -> tweet.favorite_count,
-        "retweet_count" -> tweet.retweet_count,
-        "date_time" -> tweet.date_time.toString("yyyy/MM/dd")      
-      )
-    }
 
     implicit val MainTweetWrites = new Writes[MainTweet] {
       def writes(mainTweet: MainTweet) = Json.obj(

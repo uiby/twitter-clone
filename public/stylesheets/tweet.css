@@ -45,7 +45,7 @@
 .tweet-box a:hover {
 	text-decoration: underline;
 }
-.tweet-box:hover {
+.click-box:hover {
 	background: rgba(200, 200, 255, 1);
 }
 
