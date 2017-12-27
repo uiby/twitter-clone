@@ -14,7 +14,7 @@
     
     @helper.form(action = routes.TweetController.addNewTweet()) {
     <fieldset>
-        @helper.inputText(tweetForm("messages"), 'label -> "ツイート文")
+        @helper.inputText(tweetForm("messages"), 'label -> "ツイート文", 'size -> 100)
     </fieldset>
 
     <input type="submit" value="ツイート">
