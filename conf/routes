@@ -20,6 +20,7 @@ POST    /tweet                      controllers.TweetController.addNewTweet()
 GET     /search                     controllers.TweetController.search()
 POST    /fav_tweet_id               controllers.TweetController.favorite(fav_tweet_id: String)
 POST    /retweet_id                 controllers.TweetController.retweet(retweet_id: String)
+POST    /get_tweet_id               controllers.TweetController.getTweet(get_tweet_id: String)
 GET     /javascripteRoute           controllers.TweetController.javascriptRoutes()
 
 GET     /                           controllers.UserController.home()

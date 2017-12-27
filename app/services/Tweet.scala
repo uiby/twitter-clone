@@ -55,6 +55,18 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
+  def findTweetByTweetId(tweet_id: String): Option[TweetInfo] = {
+    db.withConnection { implicit connection =>
+      SQL(
+        s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
+        FROM tweets 
+        INNER JOIN users
+        ON tweets.user_id = users.user_id
+        WHERE tweets.tweet_id = "$tweet_id" """ 
+      ).on().as(tweetInfo.singleOpt)
+    }
+  }
+
   //Favでついーと検索
   def findTweetByFavorite(user_id: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>

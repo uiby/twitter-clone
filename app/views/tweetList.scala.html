@@ -10,7 +10,7 @@
   <h1>Tweet List  search -> @searchText</h1>
 
   @tweetList.map { tweet =>
-    <div class="box">
+    <div class="tweet-box click-box">
     	<div class="name">
     	<a href="@controllers.routes.TweetController.userTweetList(tweet.user_id)">@tweet.user_name @tweet.user_id</a>
       </div>

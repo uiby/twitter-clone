@@ -5,9 +5,9 @@
   <h1>Timeline</h1>
 
   @timeline.map { tweet =>
-    <div class="box">
+    <div class="tweet-box click-box" id="@tweet.tweet_id">
     	<div class="name">
-    	<a href="@controllers.routes.TweetController.userTweetList(tweet.user_id)">@tweet.user_name @tweet.user_id</a>
+      	<a href="@controllers.routes.TweetController.userTweetList(tweet.user_id)">@tweet.user_name @tweet.user_id</a>
       </div>
     	<div class="date">
     		@tweet.date_time.toString("yyyy/MM/dd")

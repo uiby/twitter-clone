@@ -3,6 +3,7 @@ package controllers
 import models._
 import services._
 
+import play.api.libs.json._
 import javax.inject._
 import play.api._
 import play.api.mvc._
@@ -100,11 +101,29 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     }
   }
 
+  def getTweet(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+    val tweetInfo = tweetService.findTweetByTweetId(tweet_id)
+    val jsonObject: JsValue = JsObject(Seq(
+      "main_tweet" -> JsObject(Seq(
+        "tweet_id" -> JsString(tweetInfo.get.tweet_id.toString),
+        "user_name" -> JsString(tweetInfo.get.user_name),
+        "user_id" -> JsString(tweetInfo.get.user_id),
+        "messages" -> JsString(tweetInfo.get.messages),
+        "favorite_count" -> JsNumber(tweetInfo.get.favorite_count),
+        "retweet_count" -> JsNumber(tweetInfo.get.retweet_count),
+        "date_time" -> JsString(tweetInfo.get.date_time.toString("yyyy/MM/dd"))
+      ))
+    ))
+
+    Ok(jsonObject)
+  }
+
   def javascriptRoutes() = Action {implicit request: MessagesRequest[AnyContent] =>
     Ok(
         JavaScriptReverseRouter("jsRoutes")(
           routes.javascript.TweetController.favorite,
-          routes.javascript.TweetController.retweet
+          routes.javascript.TweetController.retweet,
+          routes.javascript.TweetController.getTweet
         )
     ).as("text/javascript")
   }

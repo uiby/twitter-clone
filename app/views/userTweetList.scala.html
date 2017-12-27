@@ -8,7 +8,7 @@
   <h1>Tweet List</h1>
 
   @tweetList.map { tweet =>
-    <div class="box">
+    <div class="tweet-box click-box" id="@tweet.tweet_id">
       <div class="name">
       <a href="@controllers.routes.TweetController.userTweetList(user_id)">@tweet.user_name @tweet.user_id</a>
       </div>
@@ -34,4 +34,10 @@
       </div>
     </div>
   }
+
+  <div id="overlay">
+    <p id="close">close</p>
+    <div id="overlay-main-tweet">
+    </div>
+  </div>
 }
