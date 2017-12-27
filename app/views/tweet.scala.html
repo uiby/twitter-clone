@@ -1,31 +1,22 @@
-@(tweetForm: Form[String])(implicit request: MessagesRequestHeader)
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Twitter Clone</title>
-    </head>
-    <body>
+@(tweetForm: Form[String], my_id: String)(implicit request: MessagesRequestHeader)
+@home(my_id) {
+    <h1> Tweet </h1>
 
-        <h1> Tweet </h1>
-
-        @* Global errors are not tied to any particular tweetForm field *@
-        @if(tweetForm.hasGlobalErrors) {
-          @tweetForm.globalErrors.map { error: FormError =>
-            <div>
-                @error.key: @error.message
-            </div>
-          }
-        }
-
-        
-        @helper.form(action = routes.TweetController.addNewTweet()) {
-        @helper.CSRF.formField
-        <fieldset>
-            @helper.inputText(tweetForm("messages"), 'label -> "ツイート文")
-        </fieldset>
-
-        <input type="submit" value="ツイート">
+    @* Global errors are not tied to any particular tweetForm field *@
+    @if(tweetForm.hasGlobalErrors) {
+      @tweetForm.globalErrors.map { error: FormError =>
+        <div>
+            @error.key: @error.message
+        </div>
       }
+    }
 
-    </body>
-</html>
+    
+    @helper.form(action = routes.TweetController.addNewTweet()) {
+    <fieldset>
+        @helper.inputText(tweetForm("messages"), 'label -> "ツイート文")
+    </fieldset>
+
+    <input type="submit" value="ツイート">
+  }
+}

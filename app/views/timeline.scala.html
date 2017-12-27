@@ -1,7 +1,7 @@
 @import models._
-@(timeline: Seq[TweetInfo])
+@(timeline: Seq[TweetInfo], my_id: String)
 
-@home() {
+@userPage(my_id, my_id) {
   <h1>Timeline</h1>
 
   @timeline.map { tweet =>

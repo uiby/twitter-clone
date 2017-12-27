@@ -111,6 +111,18 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
+  def findTweet(): Seq[TweetInfo] = {
+    db.withConnection { implicit connection =>
+      SQL(
+        s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
+        FROM tweets 
+        INNER JOIN users
+        ON tweets.user_id = users.user_id
+        ORDER BY date_time DESC"""
+        ).on().as(tweetInfo *)
+    }    
+  }
+
   def getTimeline(user_id: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(    

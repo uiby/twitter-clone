@@ -15,6 +15,7 @@ POST    /signup                     controllers.UserController.userAdd()
 GET     /signin                     controllers.UserController.signin()
 GET     /signout                    controllers.UserController.signout()
 
+GET     /tweetList                  controllers.TweetController.showTweetList()
 GET     /tweet                      controllers.TweetController.tweet()
 POST    /tweet                      controllers.TweetController.addNewTweet()
 GET     /search                     controllers.TweetController.search()

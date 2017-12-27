@@ -30,7 +30,7 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
     request.session.get("user_id").map { id => //ログイン済みの場合
       Redirect(routes.TweetController.showTimeline())
     }.getOrElse {
-      Redirect(routes.UserController.list())
+      Redirect(routes.TweetController.showTweetList())
       //TODO ログインしてない場合のホームページ
     }
   }
@@ -116,12 +116,20 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
 
   def followerList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val followerList: Seq[Users] = userService.findFollower(user_id)
-    Ok(views.html.followerList(followerList, user_id))
+    request.session.get("user_id").map { id => //ログイン済みの場合
+      Ok(views.html.followerList(followerList, user_id, id))
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
   }
 
   def followingList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val followList: Seq[Users] = userService.findFollow(user_id)
-    Ok(views.html.followList(followList, user_id))
+    request.session.get("user_id").map { id => //ログイン済みの場合
+      Ok(views.html.followList(followList, user_id, id))
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
   }
 
   def follow(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>

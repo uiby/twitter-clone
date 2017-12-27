@@ -37,8 +37,8 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   //ツイートページ
   val tweetForm: Form[String] = Form("messages" -> nonEmptyText)
   def tweet() = Action {implicit request: MessagesRequest[AnyContent] =>
-    request.session.get("user_name").map { name =>
-      Ok(views.html.tweet(tweetForm))
+    request.session.get("user_id").map { id =>
+      Ok(views.html.tweet(tweetForm, id))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -48,7 +48,11 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   def addNewTweet() = Action {implicit request: MessagesRequest[AnyContent] =>
     //エラー処理
     val errorFunction = { formWithErrors: Form[String] =>
-      BadRequest(views.html.tweet(formWithErrors))
+      request.session.get("user_id").map { id => //ログイン済みの場合
+        BadRequest(views.html.tweet(formWithErrors, id))
+      }.getOrElse {
+        Redirect(routes.UserController.signin())
+      }
     }
 
     val successFunction = { message: String =>
@@ -67,29 +71,51 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   //ユーザのツイート一覧
   def userTweetList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val tweetList = tweetService.findTweetById(user_id)
-    Ok(views.html.userTweetList(tweetList, user_id))
+    request.session.get("user_id").map { id => //ログイン済みの場合
+      Ok(views.html.userTweetList(tweetList, user_id, id))
+    }.getOrElse {
+      Ok(views.html.userTweetList(tweetList, user_id, "Guest"))
+    }
   }
   //ユーザのファボ一覧
   def userFavoriteList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val tweetList = tweetService.findTweetByFavorite(user_id)
-    Ok(views.html.userTweetList(tweetList, user_id))
+    request.session.get("user_id").map { id => //ログイン済みの場合
+      Ok(views.html.userTweetList(tweetList, user_id, id))
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
   }
 
   def showTimeline() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
       val timeline = tweetService.getTimeline(id)
-      Ok(views.html.timeline(timeline))
+      Ok(views.html.timeline(timeline, id))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
   }
+
+  def showTweetList() = Action{implicit request: MessagesRequest[AnyContent] =>
+    val tweetList = tweetService.findTweet()
+    request.session.get("user_id").map { id =>
+      Ok(views.html.tweetList("", tweetList, id)) 
+    }.getOrElse {
+      Ok(views.html.tweetList("", tweetList, "Guest")) 
+    }
+  }
+
   var question: String = ""
   def search() = Action { implicit request: MessagesRequest[AnyContent] =>
     var qk: Map[String,String] = request.queryString.map { case (k,v) => k -> v.mkString }
     if (qk.contains("q"))
       question = qk("q")
     val tweetList: Seq[TweetInfo] = tweetService.findTweetByWord(question)
-    Ok(views.html.tweetList(question, tweetList)) 
+    request.session.get("user_id").map { id =>
+      Ok(views.html.tweetList(question, tweetList, id)) 
+    }.getOrElse {
+      Ok(views.html.tweetList(question, tweetList, "Guest")) 
+    }
   }
 
   def favorite(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>

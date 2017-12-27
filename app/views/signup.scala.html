@@ -19,7 +19,6 @@
 
         
         @helper.form(action = routes.UserController.userAdd()) {
-        @helper.CSRF.formField
         <fieldset>
             @helper.inputText(userForm("user_id"), 'label -> "ユーザID")
         	@helper.inputText(userForm("user_name"), 'label -> "ユーザ名")
