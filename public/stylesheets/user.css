@@ -11,15 +11,19 @@
 }
 
 .side .top-box .child-box .tweet {
+	background: rgb(200, 200, 255);
 }
 
 .side .top-box .child-box .follow {
+	background: rgb(200, 255, 200);
 }
 
 .side .top-box .child-box .follower {
+	background: rgb(200, 255, 200);
 }
 
 .side .top-box .child-box .favorite {
+	background: rgb(200, 200, 255);
 }
 
 .side .top-box .child-box .user-info a{
@@ -34,7 +38,6 @@
 
 
 .side .top-box .child-box .user-info {
-  background: #f433f4;
 	float: left;
 	width: 50%;
 	height: 60px;

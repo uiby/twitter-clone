@@ -1,7 +1,6 @@
 .container{
 	margin: 0px auto;
  	width: 750px;
-	background: #FFEB3B; //黄色
 	display: flex;
 	display: -webkit-flex;
 	justify-content: space-around;
@@ -9,10 +8,8 @@
  
 .container .main{
 	width: 400px;
-	background: #f44336; //赤
 }
  
 .container .side{
 	width: 300px;
-	background: #2196F3; //青
 }
