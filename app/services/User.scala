@@ -22,6 +22,14 @@ class UserService @Inject() (dbapi: DBApi) {
     }
   }
 
+  val rela = {
+    get[String]("relations.user_id") ~
+    get[String]("relations.follower_id") map {
+      case user_id ~ follower_id
+      => Relations(user_id, follower_id)
+    }
+  }
+
   def list(): Seq[Users] = {
     db.withConnection { implicit connection =>
       SQL(
@@ -79,14 +87,22 @@ class UserService @Inject() (dbapi: DBApi) {
 
   def follow(user_id: String, follow_id: String) = {
     db.withConnection { implicit connection =>
-      SQL(
-        """
-          INSERT INTO relations VALUES ({user_id}, {follower_id})
-        """
-      ).on(
-        'user_id -> follow_id,
-        'follower_id -> user_id
-      ).executeInsert()
+      var hasRela = SQL("""SELECT * FROM relations WHERE user_id = {user_id} AND follower_id = {follower_id}"""
+        ).on(
+          'user_id -> follow_id,
+          'follower_id -> user_id
+        ).as(rela.singleOpt)
+
+      if (hasRela == None) {
+        SQL(
+          """
+            INSERT INTO relations VALUES ({user_id}, {follower_id})
+          """
+        ).on(
+          'user_id -> follow_id,
+          'follower_id -> user_id
+        ).executeInsert()
+      }
     }
   }
 

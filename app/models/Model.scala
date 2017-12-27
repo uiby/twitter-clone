@@ -8,3 +8,4 @@ case class TweetInfo(tweet_id: BigInt, user_id: String, user_name: String, messa
 case class SigninForm(user_id: String, password: String)
 case class Favorites(tweet_id: BigInt, user_id: String)
 case class Retweets(tweet_id: BigInt, user_id: String)
+case class Relations(user_id: String, follower_id: String)

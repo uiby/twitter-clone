@@ -123,4 +123,13 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
     val followList: Seq[Users] = userService.findFollow(user_id)
     Ok(views.html.followList(followList, user_id))
   }
+
+  def follow(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { id => //ログイン済みの場合
+      userService.follow(id, user_id)
+      Ok
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
+  }
 }

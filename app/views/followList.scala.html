@@ -2,12 +2,22 @@
 @(followList: Seq[Users], user_id: String)
 
 @userPage(user_id) {
+  <script src="@routes.Assets.versioned("javascripts/jquery-3.2.1.min.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.versioned("javascripts/userList.js")" type="text/javascript"></script>
+  <script type="text/javascript" src="@routes.TweetController.javascriptRoutes"></script>
   <h1>Follow List</h1>
 
   @followList.map { follow =>
-    <div class="tweet-box">
-      name: @follow.user_name
-      id: @follow.user_id
+    <div class="user-box">
+      <div class="name">
+        <a href="@controllers.routes.TweetController.userTweetList(follow.user_id)">@follow.user_name</a>
+      </div>
+      <div class="id">
+        <a href="@controllers.routes.TweetController.userTweetList(follow.user_id)">@follow.user_id</a>
+      </div>
+      <div class="form">
+        <button class="follow_button" value="@follow.user_id" type="submit">follow</button>
+      </div>
     </div>
   }
 }

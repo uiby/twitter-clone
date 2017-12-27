@@ -22,6 +22,7 @@ POST    /fav_tweet_id               controllers.TweetController.favorite(fav_twe
 POST    /retweet_id                 controllers.TweetController.retweet(retweet_id: String)
 POST    /get_tweet_id               controllers.TweetController.getTweet(get_tweet_id: String)
 POST    /reply                      controllers.TweetController.reply(send_tweet_id: String, messages: String)
+POST    /follow                     controllers.UserController.follow(user_id: String)
 GET     /javascripteRoute           controllers.TweetController.javascriptRoutes()
 
 GET     /                           controllers.UserController.home()

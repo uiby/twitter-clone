@@ -10,7 +10,7 @@
   <h1>Tweet List  search -> @searchText</h1>
 
   @tweetList.map { tweet =>
-    <div class="tweet-box click-box">
+    <div class="tweet-box" id="@tweet.tweet_id">
     	<div class="name">
     	<a href="@controllers.routes.TweetController.userTweetList(tweet.user_id)">@tweet.user_name @tweet.user_id</a>
       </div>
@@ -22,6 +22,7 @@
     	</div>
 
     	<div class="form">
+        <button class= "click-box" value="@tweet.tweet_id" type="submit"> detail</button>
         <form class="button">
           <input type="hidden" class="user_id" value="@tweet.user_id">
           <button class="fav_button" value="@tweet.tweet_id" type="submit">fav</button>
@@ -36,4 +37,17 @@
     	</div>
     </div>
   }
+
+  <div id="overlay">
+    <p id="close">close</p>
+    <div id="overlay-main-tweet">
+    </div>
+
+    <form id="reply_form">
+      <input type="text" size="40" id="reply_message" name="text_form" placeholder="返信内容" required>
+      <button id="reply_button" value="" type="submit">reply</button>
+    </form>
+    <div id="overlay-reply-tweet">
+    </div>
+  </div>
 }

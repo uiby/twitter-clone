@@ -145,6 +145,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
           routes.javascript.TweetController.retweet,
           routes.javascript.TweetController.getTweet,
           routes.javascript.TweetController.reply,
+          routes.javascript.UserController.follow,
         )
     ).as("text/javascript")
   }
