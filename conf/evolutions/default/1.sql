@@ -32,6 +32,12 @@ create table retweets (
   PRIMARY KEY (tweet_id, user_id)
 );
 
+create table replys (
+  tweet_id                        bigint not null,
+  reply_tweet_id                  bigint not null,
+  user_id                         char(12) not null
+);
+
 create table relations (
 	user_id                         char(12) not null,
 	follower_id                    char(12) not null,
@@ -43,4 +49,5 @@ drop table if exists users;
 drop table if exists tweets;
 drop table if exists favorites;
 drop table if exists retweets;
+drop table if exists replys;
 drop table if exists relations;

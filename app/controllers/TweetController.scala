@@ -101,20 +101,41 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     }
   }
 
+  def reply(send_tweet_id: String, messages: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { user_id =>
+      val temp = BigInt(send_tweet_id)
+      tweetService.reply(temp, messages, user_id)
+      Ok
+    }.getOrElse {
+      Redirect(routes.UserController.signin())
+    }
+  }
+
+  case class MainTweet(main_tweet: TweetInfo, reply_tweets: Seq[TweetInfo])
   def getTweet(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
     val tweetInfo = tweetService.findTweetByTweetId(tweet_id)
-    val jsonObject: JsValue = JsObject(Seq(
-      "main_tweet" -> JsObject(Seq(
-        "tweet_id" -> JsString(tweetInfo.get.tweet_id.toString),
-        "user_name" -> JsString(tweetInfo.get.user_name),
-        "user_id" -> JsString(tweetInfo.get.user_id),
-        "messages" -> JsString(tweetInfo.get.messages),
-        "favorite_count" -> JsNumber(tweetInfo.get.favorite_count),
-        "retweet_count" -> JsNumber(tweetInfo.get.retweet_count),
-        "date_time" -> JsString(tweetInfo.get.date_time.toString("yyyy/MM/dd"))
-      ))
-    ))
+    val replyInfo = tweetService.getReply(tweet_id)
 
+    implicit val TweetInfoWrites = new Writes[TweetInfo] {
+      def writes(tweet: TweetInfo) = Json.obj(
+        "tweet_id" -> tweet.tweet_id.toString,
+        "user_name" -> tweet.user_name,
+        "user_id" -> tweet.user_id,
+        "messages" -> tweet.messages,
+        "favorite_count" -> tweet.favorite_count,
+        "retweet_count" -> tweet.retweet_count,
+        "date_time" -> tweet.date_time.toString("yyyy/MM/dd")      
+      )
+    }
+
+    implicit val MainTweetWrites = new Writes[MainTweet] {
+      def writes(mainTweet: MainTweet) = Json.obj(
+      "main_tweet" -> mainTweet.main_tweet,
+      "reply_tweet" -> mainTweet.reply_tweets
+      )
+    }
+
+    val jsonObject = Json.toJson(MainTweet(tweetInfo.get, replyInfo))
     Ok(jsonObject)
   }
 
@@ -123,7 +144,8 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
         JavaScriptReverseRouter("jsRoutes")(
           routes.javascript.TweetController.favorite,
           routes.javascript.TweetController.retweet,
-          routes.javascript.TweetController.getTweet
+          routes.javascript.TweetController.getTweet,
+          routes.javascript.TweetController.reply,
         )
     ).as("text/javascript")
   }

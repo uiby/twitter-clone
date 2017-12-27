@@ -120,7 +120,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
       ).on(
         'messages -> message,
         'user_id -> id
-      ).executeInsert()
+      ).executeInsert() //return tweet_id
     }
   }
   //新しいツイート
@@ -195,5 +195,35 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         insertNewTweet(user_id, result.get.messages, result.get.user_id)
       }
     }
+  }
+
+  def reply(send_tweet_id: BigInt, message: String, user_id: String) = {
+    var tweet_id = insertNewTweet(user_id, message)
+    db.withConnection { implicit connection =>
+      SQL(
+        """
+          insert into replys values ({tweet_id}, {reply_tweet_id}, {user_id})
+        """
+      ).on(
+        'tweet_id -> tweet_id,
+        'reply_tweet_id -> send_tweet_id,
+        'user_id -> user_id
+      ).executeInsert()
+    }
+  }
+
+  def getReply(tweet_id: String): Seq[TweetInfo] = {
+    db.withConnection { implicit connection =>
+      SQL(
+        s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
+        FROM tweets
+        INNER JOIN users
+        ON tweets.user_id = users.user_id
+        INNER JOIN replys
+        ON tweets.tweet_id = replys.tweet_id
+        WHERE replys.reply_tweet_id = "$tweet_id"
+        ORDER BY tweets.date_time"""
+        ).on().as(tweetInfo *)
+    }    
   }
 }
