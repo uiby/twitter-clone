@@ -57,6 +57,7 @@
 - [ ] リツイート、ライク、フォローの取り消し
 - [ ] テスト
 - [ ] CSRF対策
+- [ ] パスワードをハッシュで保存
 
 ## データベース
 * usersテーブル
@@ -73,7 +74,7 @@
 | ----- | ---- | --- | --- | --- | --- |
 | tweet_id | bigint(20) | NO | PRI | NULL | auto_increment
 | messages | varchar(140) | NO |  | NULL | 
-| user_id | char(140) | NO |  | NULL | 
+| user_id | char(12) | NO |  | NULL | 
 | favorite_count | int(11) | NO |  | 0 | 
 | retweet_count | int(11) | NO |  | 0 | 
 | date_time | datetime | NO |  | CURRENT_TIMESTAMP | 
