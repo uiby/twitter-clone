@@ -1,8 +1,8 @@
 @import models._
 @import controllers._
-@(searchText: String, tweetList: Seq[TweetInfo], my_id: String)(implicit request: RequestHeader)
+@(searchText: String, tweetList: Seq[TweetInfo], myId: Option[String])(implicit request: RequestHeader)
 
-@home(my_id) {
+@home(myId) {
   <script src="@routes.Assets.versioned("javascripts/jquery-3.2.1.min.js")" type="text/javascript"></script>
   <script src="@routes.Assets.versioned("javascripts/tweet.js")" type="text/javascript"></script>
   <script type="text/javascript" src="@routes.TweetController.javascriptRoutes"></script>

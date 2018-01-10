@@ -38,7 +38,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   val tweetForm: Form[String] = Form("messages" -> nonEmptyText)
   def tweet() = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
-      Ok(views.html.tweet(tweetForm, id))
+      Ok(views.html.tweet(tweetForm, Some(id)))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -49,7 +49,7 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     //エラー処理
     val errorFunction = { formWithErrors: Form[String] =>
       request.session.get("user_id").map { id => //ログイン済みの場合
-        BadRequest(views.html.tweet(formWithErrors, id))
+        BadRequest(views.html.tweet(formWithErrors, Some(id)))
       }.getOrElse {
         Redirect(routes.UserController.signin())
       }
@@ -72,16 +72,16 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   def userTweetList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val tweetList = tweetService.findTweetById(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.userTweetList(tweetList, userId, id))
+      Ok(views.html.userTweetList(tweetList, userId, Some(id)))
     }.getOrElse {
-      Ok(views.html.userTweetList(tweetList, userId, "Guest"))
+      Ok(views.html.userTweetList(tweetList, userId, None))
     }
   }
   //ユーザのファボ一覧
   def userFavoriteList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val tweetList = tweetService.findTweetByFavorite(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.userTweetList(tweetList, userId, id))
+      Ok(views.html.userTweetList(tweetList, userId, Some(id)))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -99,9 +99,9 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   def showTweetList() = Action{implicit request: MessagesRequest[AnyContent] =>
     val tweetList = tweetService.findTweet()
     request.session.get("user_id").map { id =>
-      Ok(views.html.tweetList("", tweetList, id)) 
+      Ok(views.html.tweetList("", tweetList, Some(id))) 
     }.getOrElse {
-      Ok(views.html.tweetList("", tweetList, "Guest")) 
+      Ok(views.html.tweetList("", tweetList, None)) 
     }
   }
 
@@ -112,9 +112,9 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
       question = qk("q")
     val tweetList: Seq[TweetInfo] = tweetService.findTweetByWord(question)
     request.session.get("user_id").map { id =>
-      Ok(views.html.tweetList(question, tweetList, id)) 
+      Ok(views.html.tweetList(question, tweetList, Some(id))) 
     }.getOrElse {
-      Ok(views.html.tweetList(question, tweetList, "Guest")) 
+      Ok(views.html.tweetList(question, tweetList, None)) 
     }
   }
 

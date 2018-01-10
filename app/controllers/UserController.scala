@@ -117,7 +117,7 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
   def followerList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val followerList: Seq[Users] = userService.findFollower(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.followerList(followerList, userId, id))
+      Ok(views.html.followerList(followerList, userId, Some(id)))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -126,7 +126,7 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
   def followingList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     val followList: Seq[Users] = userService.findFollow(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.followList(followList, userId, id))
+      Ok(views.html.followList(followList, userId, Some(id)))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }

@@ -1,4 +1,4 @@
-@(my_id: String)(content: Html)
+@(myId: Option[String])(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,10 +20,10 @@
                 <li><a href="@controllers.routes.UserController.signin()">サインイン</a></li>
                 <li><a href="@controllers.routes.UserController.signup()">サインアップ</a></li>
                 <li><a href="@controllers.routes.UserController.list()">ユーザ一覧</a></li>
-                @if(my_id == "Guest") {
-                    <li>Hi, @my_id</li>
+                @if(myId.isDefined) {
+                    <li><a href="@controllers.routes.TweetController.userTweetList(myId.get)">Hi, @myId.get</a></li>
                 } else {
-                    <li><a href="@controllers.routes.TweetController.userTweetList(my_id)">Hi, @my_id</a></li>
+                    <li>Hello!</li>
                 }
                 <li>
                     <form method="GET" action="/search">

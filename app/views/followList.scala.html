@@ -1,7 +1,7 @@
 @import models._
-@(followList: Seq[Users], user_id: String, my_id: String)
+@(followList: Seq[Users], userId: String, myId: Option[String])
 
-@userPage(user_id, my_id) {
+@userPage(userId, myId) {
   <script src="@routes.Assets.versioned("javascripts/jquery-3.2.1.min.js")" type="text/javascript"></script>
   <script src="@routes.Assets.versioned("javascripts/userList.js")" type="text/javascript"></script>
   <script type="text/javascript" src="@routes.TweetController.javascriptRoutes"></script>

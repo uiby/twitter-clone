@@ -1,7 +1,7 @@
 @import models._
-@(tweetList: Seq[TweetInfo], user_id: String, my_id: String)
+@(tweetList: Seq[TweetInfo], userId: String, myId: Option[String])
 
-@userPage(user_id, my_id) {
+@userPage(userId, myId) {
   <script src="@routes.Assets.versioned("javascripts/jquery-3.2.1.min.js")" type="text/javascript"></script>
   <script src="@routes.Assets.versioned("javascripts/tweet.js")" type="text/javascript"></script>
   <script type="text/javascript" src="@routes.TweetController.javascriptRoutes"></script>
@@ -10,7 +10,7 @@
   @tweetList.map { tweet =>
     <div class="tweet-box" id="@tweet.tweetId">
       <div class="name">
-      <a href="@controllers.routes.TweetController.userTweetList(user_id)">@tweet.userName @tweet.userId</a>
+      <a href="@controllers.routes.TweetController.userTweetList(userId)">@tweet.userName @tweet.userId</a>
       </div>
       <div class="date">
         @tweet.dateTime.toString("yyyy/MM/dd")
@@ -22,13 +22,13 @@
       <div class="form">
         <button class= "click-box" value="@tweet.tweetId" type="submit"> detail</button>
         <form class="button">
-          <input type="hidden" class="user_id" value="@tweet.userId">
+          <input type="hidden" class="userId" value="@tweet.userId">
           <button class="fav_button" value="@tweet.tweetId" type="submit">fav</button>
         </form>
         @tweet.favoriteCount 
 
         <form class="button">
-          <input type="hidden" class="user_id" value="@tweet.userId">
+          <input type="hidden" class="userId" value="@tweet.userId">
           <button class="retweet_button" value="@tweet.tweetId" type="submit">retweet</button>
         </form>
         @tweet.retweetCount

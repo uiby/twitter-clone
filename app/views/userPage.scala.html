@@ -1,9 +1,9 @@
-@(user_id: String, my_id: String)(main: Html)
+@(userId: String, myId: Option[String])(main: Html)
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>@user_id</title>
+        <title>@userId</title>
 
         <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
@@ -24,10 +24,10 @@
                     <li><a href="@controllers.routes.TweetController.tweet()">ツイート</a></li>
                     <li><a href="@controllers.routes.UserController.signout()">サインアウト</a></li>
                     <li>　</li>
-                    @if(my_id == "Guest") {
-                        <li>Hi, @my_id</li>
+                    @if(myId.isDefined) {
+                        <li><a href="@controllers.routes.TweetController.userTweetList(myId.get)">Hi, @myId.get</a></li>
                     } else {
-                        <li><a href="@controllers.routes.TweetController.userTweetList(my_id)">Hi, @my_id</a></li>
+                        <li>Hello!</li>
                     }
                     <li>
                     <form method="GET" action="/search">
@@ -49,7 +49,7 @@
                 <div class="side">
                     <div class="box">
                       <div class="name">
-                        <a href="@controllers.routes.TweetController.userTweetList(user_id)">@user_id</a>
+                        <a href="@controllers.routes.TweetController.userTweetList(userId)">@userId</a>
                       </div>
                     </div>
 
@@ -57,19 +57,19 @@
                     <div class="top-box">
                       <div class="child-box">
                         <div class="user-info tweet">
-                          <a href="@controllers.routes.TweetController.userTweetList(user_id)">ツイート</a>
+                          <a href="@controllers.routes.TweetController.userTweetList(userId)">ツイート</a>
                         </div>
                         <div class="user-info follow">
-                          <a href="@controllers.routes.UserController.followingList(user_id)">フォロー</a>
+                          <a href="@controllers.routes.UserController.followingList(userId)">フォロー</a>
                         </div>
                       </div>
   
                       <div class="child-box">
                         <div class="user-info follower">
-                          <a href="@controllers.routes.UserController.followerList(user_id)">フォロワー</a>
+                          <a href="@controllers.routes.UserController.followerList(userId)">フォロワー</a>
                         </div>
                         <div class="user-info favorite">
-                          <a href="@controllers.routes.TweetController.userFavoriteList(user_id)">ライク</a>
+                          <a href="@controllers.routes.TweetController.userFavoriteList(userId)">ライク</a>
                         </div>
                       </div>
                     </div>

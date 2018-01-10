@@ -1,5 +1,5 @@
-@(tweetForm: Form[String], my_id: String)(implicit request: MessagesRequestHeader)
-@home(my_id) {
+@(tweetForm: Form[String], myId: Option[String])(implicit request: MessagesRequestHeader)
+@home(myId) {
     <h1> Tweet </h1>
 
     @* Global errors are not tied to any particular tweetForm field *@
