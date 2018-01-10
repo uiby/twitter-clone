@@ -114,27 +114,27 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
     Redirect(routes.UserController.home()).withNewSession
   }
 
-  def followerList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
-    val followerList: Seq[Users] = userService.findFollower(user_id)
+  def followerList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val followerList: Seq[Users] = userService.findFollower(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.followerList(followerList, user_id, id))
+      Ok(views.html.followerList(followerList, userId, id))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
   }
 
-  def followingList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
-    val followList: Seq[Users] = userService.findFollow(user_id)
+  def followingList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val followList: Seq[Users] = userService.findFollow(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.followList(followList, user_id, id))
+      Ok(views.html.followList(followList, userId, id))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
   }
 
-  def follow(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+  def follow(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id => //ログイン済みの場合
-      userService.follow(id, user_id)
+      userService.follow(id, userId)
       Ok
     }.getOrElse {
       Redirect(routes.UserController.signin())

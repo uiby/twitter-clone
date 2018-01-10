@@ -48,7 +48,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
       => Favorites(tweetId, userId)
     }
   }
-  
+
   val retweetsMapper = {
     get[BigInt]("retweets.tweet_id") ~
     get[String]("retweets.user_id") map {
@@ -58,33 +58,33 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
   }
 
   //IDでついーと検索
-  def findTweetById(user_id: String): Seq[TweetInfo] = {
+  def findTweetById(userId: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(
         s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
         FROM tweets 
         INNER JOIN users
         ON tweets.user_id = users.user_id
-        WHERE tweets.user_id = "$user_id" 
+        WHERE tweets.user_id = "$userId" 
         ORDER BY date_time DESC"""
         ).on().as(tweetInfoMapper *)
     }
   }
 
-  def findTweetByTweetId(tweet_id: String): Option[TweetInfo] = {
+  def findTweetByTweetId(tweetId: String): Option[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(
         s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
         FROM tweets 
         INNER JOIN users
         ON tweets.user_id = users.user_id
-        WHERE tweets.tweet_id = "$tweet_id" """ 
+        WHERE tweets.tweet_id = "$tweetId" """ 
       ).on().as(tweetInfoMapper.singleOpt)
     }
   }
 
   //Favでついーと検索
-  def findTweetByFavorite(user_id: String): Seq[TweetInfo] = {
+  def findTweetByFavorite(userId: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(
         s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
@@ -92,21 +92,21 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         INNER JOIN users
         ON tweets.user_id = users.user_id
         INNER JOIN favorites
-        ON favorites.user_id = "$user_id"
+        ON favorites.user_id = "$userId"
         WHERE tweets.tweet_id = favorites.tweet_id 
         ORDER BY date_time DESC"""
         ).on().as(tweetInfoMapper *)
     }
   }
 
-  def findTweetByWord(word: String): Seq[TweetInfo] = {
+  def findTweetByWord(searchWord: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(
         s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
         FROM tweets 
         INNER JOIN users
         ON tweets.user_id = users.user_id
-        WHERE messages LIKE "%$word%" 
+        WHERE messages LIKE "%$searchWord%" 
         ORDER BY date_time DESC"""
         ).on().as(tweetInfoMapper *)
     }
@@ -124,7 +124,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }    
   }
 
-  def getTimeline(user_id: String): Seq[TweetInfo] = {
+  def getTimeline(userId: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(    
         s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
@@ -132,7 +132,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         INNER JOIN users
         ON tweets.user_id = users.user_id
         INNER JOIN relations
-        on tweets.user_id = "$user_id" or (relations.user_id = "$user_id" AND tweets.user_id = relations.follower_id) 
+        on tweets.user_id = "$userId" or (relations.user_id = "$userId" AND tweets.user_id = relations.follower_id) 
         ORDER BY date_time DESC"""
         ).on().as(tweetInfoMapper *)
     }
@@ -152,7 +152,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
   //新しいツイート
-  def insertNewTweet(id: String, message: String, original_user_id: String) = {
+  def insertNewTweet(id: String, message: String, originalUserId: String) = {
     db.withConnection { implicit connection =>
       SQL(
         """
@@ -161,32 +161,32 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
       ).on(
         'messages -> message,
         'user_id -> id,
-        'original_user_id -> original_user_id,
+        'original_user_id -> originalUserId,
       ).executeInsert()
     }
   }
 
-  def favorite(tweet_id: BigInt, user_id: String) = {
+  def favorite(tweetId: BigInt, userId: String) = {
     db.withConnection { implicit connection =>
       var hasFav = SQL("""SELECT * FROM favorites WHERE tweet_id = {tweet_id} AND user_id = {user_id}"""
         ).on(
-          'tweet_id -> tweet_id,
-          'user_id -> user_id
+          'tweet_id -> tweetId,
+          'user_id -> userId
         ).as(favoritesMapper.singleOpt)
 
       if (hasFav == None) {
         SQL("""INSERT INTO favorites VALUES ({tweet_id}, {user_id})"""
         ).on(
-          'tweet_id -> tweet_id,
-          'user_id -> user_id
+          'tweet_id -> tweetId,
+          'user_id -> userId
         ).executeInsert()
   
-        var fav_count = SQL("""SELECT favorite_count FROM tweets WHERE tweet_id = {tweet_id}"""
+        var favCount = SQL("""SELECT favorite_count FROM tweets WHERE tweet_id = {tweet_id}"""
           ).on(
-            'tweet_id -> tweet_id
+            'tweet_id -> tweetId
           ).as(get[Int]("favorite_count").singleOpt)
   
-        if (fav_count != None) {
+        if (favCount != None) {
           SQL (
             """
               UPDATE tweets
@@ -194,33 +194,30 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
               WHERE tweet_id = {id}
             """
           ).on(
-            'id -> tweet_id,
-            'favorite_count -> (fav_count.get + 1).toString
+            'id -> tweetId,
+            'favorite_count -> (favCount.get + 1).toString
           ).executeUpdate()
         }
       }
     }
   }
 
-  def retweet(tweet_id: BigInt, user_id: String) = {
+  def retweet(tweetId: BigInt, userId: String) = {
     db.withConnection { implicit connection =>
       var hasRet = SQL("""SELECT * FROM retweets WHERE tweet_id = {tweet_id} AND user_id = {user_id}"""
         ).on(
-          'tweet_id -> tweet_id,
-          'user_id -> user_id
+          'tweet_id -> tweetId,
+          'user_id -> userId
         ).as(favoritesMapper.singleOpt)
 
       if (hasRet == None) {
-        SQL(
-          """
-            INSERT INTO retweets VALUES ({tweet_id}, {user_id})
-          """
+        SQL("""INSERT INTO retweets VALUES ({tweet_id}, {user_id})"""
         ).on(
-          'tweet_id -> tweet_id,
-          'user_id -> user_id
+          'tweet_id -> tweetId,
+          'user_id -> userId
         ).executeInsert()
   
-        var result = SQL(s"""SELECT * FROM tweets WHERE tweet_id = $tweet_id""").as(tweetsMapper.singleOpt)
+        var result = SQL(s"""SELECT * FROM tweets WHERE tweet_id = $tweetId""").as(tweetsMapper.singleOpt)
   
         if (result != None) {
           SQL (
@@ -230,32 +227,29 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
               WHERE tweet_id = {id}
             """
           ).on(
-            'id -> tweet_id,
+            'id -> tweetId,
             'retweet_count -> (result.get.retweetCount + 1).toString
           ).executeUpdate()
   
-          insertNewTweet(user_id, result.get.messages, result.get.userId)
+          insertNewTweet(userId, result.get.messages, result.get.userId)
         }
       }
     }
   }
 
-  def reply(send_tweet_id: BigInt, message: String, user_id: String) = {
-    var tweet_id = insertNewTweet(user_id, message)
+  def reply(sendTweetId: BigInt, message: String, userId: String) = {
+    var tweetId = insertNewTweet(userId, message)
     db.withConnection { implicit connection =>
-      SQL(
-        """
-          INSERT INTO replys VALUES ({tweet_id}, {reply_tweet_id}, {user_id})
-        """
+      SQL("""INSERT INTO replys VALUES ({tweet_id}, {reply_tweet_id}, {user_id})"""
       ).on(
-        'tweet_id -> tweet_id,
-        'reply_tweet_id -> send_tweet_id,
-        'user_id -> user_id
+        'tweet_id -> tweetId,
+        'reply_tweet_id -> sendTweetId,
+        'user_id -> userId
       ).executeInsert()
     }
   }
 
-  def getReply(tweet_id: String): Seq[TweetInfo] = {
+  def getReply(tweetId: String): Seq[TweetInfo] = {
     db.withConnection { implicit connection =>
       SQL(
         s"""SELECT distinct tweets.tweet_id, tweets.user_id, users.user_name, tweets.messages, tweets.user_id, tweets.favorite_count, tweets.retweet_count, tweets.date_time, tweets.original_user_id
@@ -264,7 +258,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ON tweets.user_id = users.user_id
         INNER JOIN replys
         ON tweets.tweet_id = replys.tweet_id
-        WHERE replys.reply_tweet_id = "$tweet_id"
+        WHERE replys.reply_tweet_id = "$tweetId"
         ORDER BY tweets.date_time"""
         ).on().as(tweetInfoMapper *)
     }    

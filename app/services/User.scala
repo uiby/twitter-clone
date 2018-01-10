@@ -85,12 +85,12 @@ class UserService @Inject() (dbapi: DBApi) {
     }
   }
 
-  def follow(user_id: String, follow_id: String) = {
+  def follow(userId: String, followId: String) = {
     db.withConnection { implicit connection =>
       var hasRela = SQL("""SELECT * FROM relations WHERE user_id = {user_id} AND follower_id = {follower_id}"""
         ).on(
-          'user_id -> follow_id,
-          'follower_id -> user_id
+          'user_id -> followId,
+          'follower_id -> userId
         ).as(relationsMapper.singleOpt)
 
       if (hasRela == None) {
@@ -99,22 +99,22 @@ class UserService @Inject() (dbapi: DBApi) {
             INSERT INTO relations VALUES ({user_id}, {follower_id})
           """
         ).on(
-          'user_id -> follow_id,
-          'follower_id -> user_id
+          'user_id -> followId,
+          'follower_id -> userId
         ).executeInsert()
       }
     }
   }
 
-  def UnFollow(user_id: String, follow_id: String) = {
+  def UnFollow(userId: String, followId: String) = {
     db.withConnection { implicit connection =>
       SQL(
         """
           DELETE FORM relations WHERE user_id = {user_id} AND follower_id = {follower_id}
         """
       ).on(
-        'user_id -> follow_id,
-        'follower_id -> user_id
+        'user_id -> followId,
+        'follower_id -> userId
       ).execute()
     }
   }

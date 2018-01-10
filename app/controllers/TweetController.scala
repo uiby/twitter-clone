@@ -69,19 +69,19 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
   }
 
   //ユーザのツイート一覧
-  def userTweetList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
-    val tweetList = tweetService.findTweetById(user_id)
+  def userTweetList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val tweetList = tweetService.findTweetById(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.userTweetList(tweetList, user_id, id))
+      Ok(views.html.userTweetList(tweetList, userId, id))
     }.getOrElse {
-      Ok(views.html.userTweetList(tweetList, user_id, "Guest"))
+      Ok(views.html.userTweetList(tweetList, userId, "Guest"))
     }
   }
   //ユーザのファボ一覧
-  def userFavoriteList(user_id: String) = Action {implicit request: MessagesRequest[AnyContent] =>
-    val tweetList = tweetService.findTweetByFavorite(user_id)
+  def userFavoriteList(userId: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    val tweetList = tweetService.findTweetByFavorite(userId)
     request.session.get("user_id").map { id => //ログイン済みの場合
-      Ok(views.html.userTweetList(tweetList, user_id, id))
+      Ok(views.html.userTweetList(tweetList, userId, id))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
@@ -118,45 +118,45 @@ class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControl
     }
   }
 
-  def favorite(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+  def favorite(tweetId: String) = Action { implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
-      val temp = BigInt(tweet_id)
+      val temp = BigInt(tweetId)
       tweetService.favorite(temp, id)
-      Ok(Json.toJson(tweetService.findTweetByTweetId(tweet_id).get))
+      Ok(Json.toJson(tweetService.findTweetByTweetId(tweetId).get))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
   }
 
-  def retweet(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+  def retweet(tweetId: String) = Action { implicit request: MessagesRequest[AnyContent] =>
     request.session.get("user_id").map { id =>
-      val temp = BigInt(tweet_id)
+      val temp = BigInt(tweetId)
       tweetService.retweet(temp, id)
-      Ok(Json.toJson(tweetService.findTweetByTweetId(tweet_id).get))
+      Ok(Json.toJson(tweetService.findTweetByTweetId(tweetId).get))
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
   }
 
-  def reply(send_tweet_id: String, messages: String) = Action {implicit request: MessagesRequest[AnyContent] =>
-    request.session.get("user_id").map { user_id =>
-      val temp = BigInt(send_tweet_id)
-      tweetService.reply(temp, messages, user_id)
+  def reply(sendTweetId: String, messages: String) = Action {implicit request: MessagesRequest[AnyContent] =>
+    request.session.get("user_id").map { userId =>
+      val temp = BigInt(sendTweetId)
+      tweetService.reply(temp, messages, userId)
       Ok
     }.getOrElse {
       Redirect(routes.UserController.signin())
     }
   }
 
-  case class MainTweet(main_tweet: TweetInfo, reply_tweets: Seq[TweetInfo])
-  def getTweet(tweet_id: String) = Action { implicit request: MessagesRequest[AnyContent] =>
-    val tweetInfo = tweetService.findTweetByTweetId(tweet_id)
-    val replyInfo = tweetService.getReply(tweet_id)
+  case class MainTweet(mainTweet: TweetInfo, replyTweets: Seq[TweetInfo])
+  def getTweet(tweetId: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+    val tweetInfo = tweetService.findTweetByTweetId(tweetId)
+    val replyInfo = tweetService.getReply(tweetId)
 
     implicit val MainTweetWrites = new Writes[MainTweet] {
       def writes(mainTweet: MainTweet) = Json.obj(
-      "main_tweet" -> mainTweet.main_tweet,
-      "reply_tweet" -> mainTweet.reply_tweets
+      "main_tweet" -> mainTweet.mainTweet,
+      "reply_tweet" -> mainTweet.replyTweets
       )
     }
 
