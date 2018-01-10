@@ -13,7 +13,7 @@ class UserService @Inject() (dbapi: DBApi) {
 
   private val db = dbapi.database("default")
 
-  val simple = {
+  val UsersMapper = {
   	get[String]("users.user_id")~
     get[String]("users.user_name")~
     get[String]("users.email")~
@@ -22,7 +22,7 @@ class UserService @Inject() (dbapi: DBApi) {
     }
   }
 
-  val rela = {
+  val relationsMapper = {
     get[String]("relations.user_id") ~
     get[String]("relations.follower_id") map {
       case userId ~ followerId
@@ -36,7 +36,7 @@ class UserService @Inject() (dbapi: DBApi) {
         """
           SELECT * FROM users
         """
-      ).as(simple *)
+      ).as(UsersMapper *)
     }
   }
 
@@ -57,7 +57,7 @@ class UserService @Inject() (dbapi: DBApi) {
 
   def findUserById(id: String): Option[Users] ={
     db.withConnection { implicit connection =>
-      SQL("SELECT * FROM users WHERE user_id = {id}").on('id -> id).as(simple.singleOpt)
+      SQL("SELECT * FROM users WHERE user_id = {id}").on('id -> id).as(UsersMapper.singleOpt)
     }
   }
 
@@ -69,7 +69,7 @@ class UserService @Inject() (dbapi: DBApi) {
           FROM users 
           INNER join relations
           ON relations.follower_id = {id} AND relations.user_id = users.user_id
-        """).on('id -> id).as(simple *)
+        """).on('id -> id).as(UsersMapper *)
     }
   }
 
@@ -81,7 +81,7 @@ class UserService @Inject() (dbapi: DBApi) {
           FROM users 
           INNER join relations
           ON relations.user_id = {id} AND relations.follower_id = users.user_id
-        """).on('id -> id).as(simple *)
+        """).on('id -> id).as(UsersMapper *)
     }
   }
 
@@ -91,7 +91,7 @@ class UserService @Inject() (dbapi: DBApi) {
         ).on(
           'user_id -> follow_id,
           'follower_id -> user_id
-        ).as(rela.singleOpt)
+        ).as(relationsMapper.singleOpt)
 
       if (hasRela == None) {
         SQL(

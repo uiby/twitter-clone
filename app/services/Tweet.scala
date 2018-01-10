@@ -15,7 +15,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
 
   private val db = dbapi.database("default")
 
-  val simple = {
+  val tweetsMapper = {
   	get[BigInt]("tweets.tweet_id")~
     get[String]("tweets.messages")~
     get[String]("tweets.user_id")~
@@ -28,7 +28,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
-  val tweetInfo = {
+  val tweetInfoMapper = {
     get[BigInt]("tweets.tweet_id")~
     get[String]("tweets.user_id")~
     get[String]("users.user_name")~
@@ -41,14 +41,15 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     }
   }
 
-  val fav = {
+  val favoritesMapper = {
     get[BigInt]("favorites.tweet_id") ~
     get[String]("favorites.user_id") map {
       case tweetId ~ userId
       => Favorites(tweetId, userId)
     }
   }
-  val ret = {
+  
+  val retweetsMapper = {
     get[BigInt]("retweets.tweet_id") ~
     get[String]("retweets.user_id") map {
       case tweetId ~ userId
@@ -66,7 +67,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ON tweets.user_id = users.user_id
         WHERE tweets.user_id = "$user_id" 
         ORDER BY date_time DESC"""
-        ).on().as(tweetInfo *)
+        ).on().as(tweetInfoMapper *)
     }
   }
 
@@ -78,7 +79,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         INNER JOIN users
         ON tweets.user_id = users.user_id
         WHERE tweets.tweet_id = "$tweet_id" """ 
-      ).on().as(tweetInfo.singleOpt)
+      ).on().as(tweetInfoMapper.singleOpt)
     }
   }
 
@@ -94,7 +95,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ON favorites.user_id = "$user_id"
         WHERE tweets.tweet_id = favorites.tweet_id 
         ORDER BY date_time DESC"""
-        ).on().as(tweetInfo *)
+        ).on().as(tweetInfoMapper *)
     }
   }
 
@@ -107,7 +108,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ON tweets.user_id = users.user_id
         WHERE messages LIKE "%$word%" 
         ORDER BY date_time DESC"""
-        ).on().as(tweetInfo *)
+        ).on().as(tweetInfoMapper *)
     }
   }
 
@@ -119,7 +120,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         INNER JOIN users
         ON tweets.user_id = users.user_id
         ORDER BY date_time DESC"""
-        ).on().as(tweetInfo *)
+        ).on().as(tweetInfoMapper *)
     }    
   }
 
@@ -133,7 +134,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         INNER JOIN relations
         on tweets.user_id = "$user_id" or (relations.user_id = "$user_id" AND tweets.user_id = relations.follower_id) 
         ORDER BY date_time DESC"""
-        ).on().as(tweetInfo *)
+        ).on().as(tweetInfoMapper *)
     }
   }
 
@@ -171,7 +172,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ).on(
           'tweet_id -> tweet_id,
           'user_id -> user_id
-        ).as(fav.singleOpt)
+        ).as(favoritesMapper.singleOpt)
 
       if (hasFav == None) {
         SQL("""INSERT INTO favorites VALUES ({tweet_id}, {user_id})"""
@@ -207,7 +208,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ).on(
           'tweet_id -> tweet_id,
           'user_id -> user_id
-        ).as(fav.singleOpt)
+        ).as(favoritesMapper.singleOpt)
 
       if (hasRet == None) {
         SQL(
@@ -219,7 +220,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
           'user_id -> user_id
         ).executeInsert()
   
-        var result = SQL(s"""SELECT * FROM tweets WHERE tweet_id = $tweet_id""").as(simple.singleOpt)
+        var result = SQL(s"""SELECT * FROM tweets WHERE tweet_id = $tweet_id""").as(tweetsMapper.singleOpt)
   
         if (result != None) {
           SQL (
@@ -265,7 +266,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
         ON tweets.tweet_id = replys.tweet_id
         WHERE replys.reply_tweet_id = "$tweet_id"
         ORDER BY tweets.date_time"""
-        ).on().as(tweetInfo *)
+        ).on().as(tweetInfoMapper *)
     }    
   }
 }
