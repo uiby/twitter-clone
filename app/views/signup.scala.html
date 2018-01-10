@@ -20,8 +20,8 @@
         
         @helper.form(action = routes.UserController.userAdd()) {
         <fieldset>
-            @helper.inputText(userForm("user_id"), 'label -> "ユーザID")
-        	@helper.inputText(userForm("user_name"), 'label -> "ユーザ名")
+            @helper.inputText(userForm("userId"), 'label -> "ユーザID")
+        	@helper.inputText(userForm("userName"), 'label -> "ユーザ名")
             @helper.inputText(userForm("email"), 'label -> "メールアドレス")
             @helper.inputText(userForm("password"), 'label -> "パスワード")
         </fieldset>

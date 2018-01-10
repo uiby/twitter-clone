@@ -21,7 +21,7 @@
         
         @helper.form(action = routes.UserController.signin()) {
         <fieldset>
-            @helper.inputText(signinForm("user_id"), 'label -> "ユーザID")
+            @helper.inputText(signinForm("userId"), 'label -> "ユーザID")
             @helper.inputText(signinForm("password"), 'label -> "パスワード")
         </fieldset>
 

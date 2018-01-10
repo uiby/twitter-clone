@@ -44,8 +44,8 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
   //アカウント作成
   val userForm = Form(
     mapping(
-      "user_id" -> nonEmptyText(minLength = 3, maxLength = 12),
-      "user_name" -> nonEmptyText(minLength = 3, maxLength = 12),
+      "userId" -> nonEmptyText(minLength = 3, maxLength = 12),
+      "userName" -> nonEmptyText(minLength = 3, maxLength = 12),
       "email" -> email,
       "password" -> nonEmptyText(minLength = 5, maxLength = 12)
     )(
@@ -82,7 +82,7 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
   //アカウント作成
   val signinForm = Form(
     mapping(
-      "user_id" -> nonEmptyText(minLength = 3, maxLength = 12),
+      "userId" -> nonEmptyText(minLength = 3, maxLength = 12),
       "password" -> nonEmptyText(minLength = 5, maxLength = 12)
     )(
       (SigninForm.apply)
