@@ -174,7 +174,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
           'user_id -> userId
         ).as(favoritesMapper.singleOpt)
 
-      if (hasFav == None) {
+      if (hasFav.isEmpty) {
         SQL("""INSERT INTO favorites VALUES ({tweet_id}, {user_id})"""
         ).on(
           'tweet_id -> tweetId,
@@ -186,7 +186,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
             'tweet_id -> tweetId
           ).as(get[Int]("favorite_count").singleOpt)
   
-        if (favCount != None) {
+        if (favCount.isDefined) {
           SQL (
             """
               UPDATE tweets
@@ -210,7 +210,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
           'user_id -> userId
         ).as(favoritesMapper.singleOpt)
 
-      if (hasRet == None) {
+      if (hasRet.isEmpty) {
         SQL("""INSERT INTO retweets VALUES ({tweet_id}, {user_id})"""
         ).on(
           'tweet_id -> tweetId,
@@ -219,7 +219,7 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
   
         var result = SQL(s"""SELECT * FROM tweets WHERE tweet_id = $tweetId""").as(tweetsMapper.singleOpt)
   
-        if (result != None) {
+        if (result.isDefined) {
           SQL (
             """
               UPDATE tweets

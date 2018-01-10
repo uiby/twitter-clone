@@ -93,7 +93,7 @@ class UserService @Inject() (dbapi: DBApi) {
           'follower_id -> userId
         ).as(relationsMapper.singleOpt)
 
-      if (hasRela == None) {
+      if (hasRela.isEmpty) {
         SQL(
           """
             INSERT INTO relations VALUES ({user_id}, {follower_id})
