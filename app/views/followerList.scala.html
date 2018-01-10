@@ -10,13 +10,13 @@
   @followerList.map { follower =>
     <div class="user-box">
       <div class="name">
-        <a href="@controllers.routes.TweetController.userTweetList(follower.user_id)">@follower.user_name</a>
+        <a href="@controllers.routes.TweetController.userTweetList(follower.userId)">@follower.userName</a>
       </div>
       <div class="id">
-        <a href="@controllers.routes.TweetController.userTweetList(follower.user_id)">@follower.user_id</a>
+        <a href="@controllers.routes.TweetController.userTweetList(follower.userId)">@follower.userId</a>
       </div>
       <div class="form">
-        <button class="follow_button" value="@follower.user_id" type="submit">follow</button>
+        <button class="follow_button" value="@follower.userId" type="submit">follow</button>
       </div>
     </div>
   }

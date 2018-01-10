@@ -23,8 +23,8 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     get[Int]("tweets.retweet_count")~
     get[DateTime]("tweets.date_time") ~
     get[String]("original_user_id") map {
-      case tweet_id ~ messages ~ user_id ~ favorite_count ~ retweet_count ~ date_time ~ original_user_id
-      => Tweets(tweet_id, messages, user_id, favorite_count, retweet_count, date_time, original_user_id)
+      case tweetId ~ messages ~ userId ~ favoriteCount ~ retweetCount ~ dateTime ~ originalUserId
+      => Tweets(tweetId, messages, userId, favoriteCount, retweetCount, dateTime, originalUserId)
     }
   }
 
@@ -36,23 +36,23 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
     get[Int]("tweets.favorite_count") ~
     get[Int]("tweets.retweet_count")~
     get[DateTime]("tweets.date_time") map {
-      case tweet_id ~ user_id ~ user_name ~ messages ~ favorite_count ~ retweet_count ~ date_time 
-      => TweetInfo(tweet_id, user_id, user_name, messages, favorite_count, retweet_count, date_time)
+      case tweetId ~ userId ~ userName ~ messages ~ favoriteCount ~ retweetCount ~ dateTime 
+      => TweetInfo(tweetId, userId, userName, messages, favoriteCount, retweetCount, dateTime)
     }
   }
 
   val fav = {
     get[BigInt]("favorites.tweet_id") ~
     get[String]("favorites.user_id") map {
-      case tweet_id ~ user_id
-      => Favorites(tweet_id, user_id)
+      case tweetId ~ userId
+      => Favorites(tweetId, userId)
     }
   }
   val ret = {
     get[BigInt]("retweets.tweet_id") ~
     get[String]("retweets.user_id") map {
-      case tweet_id ~ user_id
-      => Retweets(tweet_id, user_id)
+      case tweetId ~ userId
+      => Retweets(tweetId, userId)
     }
   }
 
@@ -230,10 +230,10 @@ class TweetService @Inject() (dbapi: DBApi, userService: UserService) {
             """
           ).on(
             'id -> tweet_id,
-            'retweet_count -> (result.get.retweet_count + 1).toString
+            'retweet_count -> (result.get.retweetCount + 1).toString
           ).executeUpdate()
   
-          insertNewTweet(user_id, result.get.messages, result.get.user_id)
+          insertNewTweet(user_id, result.get.messages, result.get.userId)
         }
       }
     }

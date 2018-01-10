@@ -8,30 +8,30 @@
   <h1>Tweet List</h1>
 
   @tweetList.map { tweet =>
-    <div class="tweet-box" id="@tweet.tweet_id">
+    <div class="tweet-box" id="@tweet.tweetId">
       <div class="name">
-      <a href="@controllers.routes.TweetController.userTweetList(user_id)">@tweet.user_name @tweet.user_id</a>
+      <a href="@controllers.routes.TweetController.userTweetList(user_id)">@tweet.userName @tweet.userId</a>
       </div>
       <div class="date">
-        @tweet.date_time.toString("yyyy/MM/dd")
+        @tweet.dateTime.toString("yyyy/MM/dd")
       </div>
       <div class="content">
         @tweet.messages
       </div>
 
       <div class="form">
-        <button class= "click-box" value="@tweet.tweet_id" type="submit"> detail</button>
+        <button class= "click-box" value="@tweet.tweetId" type="submit"> detail</button>
         <form class="button">
-          <input type="hidden" class="user_id" value="@tweet.user_id">
-          <button class="fav_button" value="@tweet.tweet_id" type="submit">fav</button>
+          <input type="hidden" class="user_id" value="@tweet.userId">
+          <button class="fav_button" value="@tweet.tweetId" type="submit">fav</button>
         </form>
-        @tweet.favorite_count 
+        @tweet.favoriteCount 
 
         <form class="button">
-          <input type="hidden" class="user_id" value="@tweet.user_id">
-          <button class="retweet_button" value="@tweet.tweet_id" type="submit">retweet</button>
+          <input type="hidden" class="user_id" value="@tweet.userId">
+          <button class="retweet_button" value="@tweet.tweetId" type="submit">retweet</button>
         </form>
-        @tweet.retweet_count
+        @tweet.retweetCount
       </div>
     </div>
   }

@@ -24,13 +24,13 @@ import play.filters.csrf.CSRF
 class TweetController @Inject()(tweetService: TweetService, mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
   implicit val TweetInfoWrites = new Writes[TweetInfo] {
     def writes(tweet: TweetInfo) = Json.obj(
-      "tweet_id" -> tweet.tweet_id.toString,
-      "user_name" -> tweet.user_name,
-      "user_id" -> tweet.user_id,
+      "tweet_id" -> tweet.tweetId.toString,
+      "user_name" -> tweet.userName,
+      "user_id" -> tweet.userId,
       "messages" -> tweet.messages,
-      "favorite_count" -> tweet.favorite_count,
-      "retweet_count" -> tweet.retweet_count,
-      "date_time" -> tweet.date_time.toString("yyyy/MM/dd")      
+      "favorite_count" -> tweet.favoriteCount,
+      "retweet_count" -> tweet.retweetCount,
+      "date_time" -> tweet.dateTime.toString("yyyy/MM/dd")      
     )
   }
 

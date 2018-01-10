@@ -67,11 +67,11 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
     }
 
     val successFunction = { user: Users =>
-      userService.findUserById(user.user_id).map { user => //既にアカウントがある場合
+      userService.findUserById(user.userId).map { user => //既にアカウントがある場合
         BadRequest(views.html.signup(userForm))
       }.getOrElse{
         userService.insert(user)
-        Redirect(routes.UserController.home()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+        Redirect(routes.UserController.home()).withSession(request.session + ("user_id" -> user.userId) + ("user_name" -> user.userName))
       }
     }
 
@@ -99,8 +99,8 @@ class UserController @Inject()(userService: UserService, mcc: MessagesController
     }
 
     val successFunction = { signinForm: SigninForm =>
-      userService.findUserById(signinForm.user_id).map { user =>
-        Redirect(routes.UserController.home()).withSession(request.session + ("user_id" -> user.user_id) + ("user_name" -> user.user_name))
+      userService.findUserById(signinForm.userId).map { user =>
+        Redirect(routes.UserController.home()).withSession(request.session + ("user_id" -> user.userId) + ("user_name" -> user.userName))
       }.getOrElse{
         Redirect(routes.UserController.signin())
       }

@@ -18,15 +18,15 @@ class UserService @Inject() (dbapi: DBApi) {
     get[String]("users.user_name")~
     get[String]("users.email")~
     get[String]("users.password") map {
-      case user_id ~ user_name ~ email ~ password => Users(user_id, user_name, email, password)
+      case userId ~ userName ~ email ~ password => Users(userId, userName, email, password)
     }
   }
 
   val rela = {
     get[String]("relations.user_id") ~
     get[String]("relations.follower_id") map {
-      case user_id ~ follower_id
-      => Relations(user_id, follower_id)
+      case userId ~ followerId
+      => Relations(userId, followerId)
     }
   }
 
@@ -47,8 +47,8 @@ class UserService @Inject() (dbapi: DBApi) {
         INSERT INTO users VALUES ({user_id}, {user_name}, {email}, {password})
         """
       ).on(
-        'user_id -> users.user_id,
-        'user_name -> users.user_name,
+        'user_id -> users.userId,
+        'user_name -> users.userName,
         'email -> users.email,
         'password -> users.password
       ).executeInsert()

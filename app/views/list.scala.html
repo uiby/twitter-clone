@@ -19,8 +19,8 @@
                 <tbody>
                 	@items.map { user =>
                 	<tr>
-                		<td><a href="@controllers.routes.TweetController.userTweetList(user.user_id)"> @user.user_id</a> </td>
-                		<td> @user.user_name </td>
+                		<td><a href="@controllers.routes.TweetController.userTweetList(user.userId)"> @user.userId</a> </td>
+                		<td> @user.userName </td>
                 		<td> @user.email </td>
                 		<td> @user.password </td>
                 	</tr>
